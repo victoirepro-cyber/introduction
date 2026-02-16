@@ -157,11 +157,18 @@ video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transiti
       <h1>COMPATIBILITÉ MÉTIER ET RECRUTEMENT</h1>
 
       <div class="news-container">
-        <h2 style="color:#4caf50;">FIL D’ACTUALITÉ / PUBLICITÉ</h2>
-        <div class="news-item">📢 Nouvelle offre d'emploi disponible.</div>
-        <div class="news-item">🎓 Test de compatibilité mis à jour.</div>
-        <div class="news-item">🚀 Découvrez les métiers les plus demandés.</div>
-      </div>
+  <h2 class="news-title">FIL D’ACTUALITÉ / PUBLICITÉ</h2>
+
+  <!-- Bande défilante (vide au départ) -->
+  <div class="ticker" aria-label="Fil d’actualité">
+    <div class="ticker-track" id="tickerTrack">
+      <!-- VIDE pour le moment -->
+    </div>
+  </div>
+
+  <!-- Message quand c’est vide -->
+  <p class="news-empty" id="newsEmpty">Aucune actualité pour le moment.</p>
+</div>
 
       <div class="buttons">
         <button class="btn talent">PROFIL TALENT</button>
