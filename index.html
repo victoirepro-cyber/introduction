@@ -64,14 +64,14 @@
         msg.textContent = country ? `Pays détecté : ${country}` : "Pays non détecté";
         if(country) localStorage.setItem("ijom_country", country);
 
-        // attente totale ~7 secondes avant action
-        setTimeout(() => {
+        // attente totale ~6 secondes avant action
+         setTimeout(() => {
           if(country) applyFakeZoom(country);
           msg.textContent = "Redirection…";
           setTimeout(() => {
             window.location.href = HOME.talent; // tu peux choisir talent/partenaire plus tard
-           }, 900);
-        }, 8000);
+          }, 900);
+        }, 6000);
 
       }catch(e){
         msg.textContent = "Détection impossible — redirection…";
