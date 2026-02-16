@@ -79,6 +79,73 @@ video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transiti
   border-radius:10px;
 }
 
+.news-title{
+  margin:0 0 12px;
+  color:#4caf50;
+}
+
+/* Zone du défilement */
+.ticker{
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  height: 74px;
+  display: flex;
+  align-items: center;
+}
+
+/* Piste qui défile */
+.ticker-track{
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  padding-left: 100%;
+  white-space: nowrap;
+  will-change: transform;
+  animation: tickerMove 18s linear infinite;
+}
+
+/* Pause quand la souris survole */
+.ticker:hover .ticker-track{
+  animation-play-state: paused;
+}
+
+/* Element d'actualité (texte + image optionnelle) */
+.ticker-item{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: #f7f7f7;
+  border: 1px solid #eee;
+  font-size: 14px;
+}
+
+/* Image optionnelle dans le ticker */
+.ticker-item img{
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Message vide */
+.news-empty{
+  margin: 12px 0 0;
+  color:#666;
+  font-size: 14px;
+}
+
+/* Animation */
+@keyframes tickerMove{
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-120%); }
+}
+
+
 .news-item{
   background:white;
   padding:15px;
@@ -156,12 +223,19 @@ video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transiti
     <div class="main-content">
       <h1>COMPATIBILITÉ MÉTIER ET RECRUTEMENT</h1>
 
-      <div class="news-container">
-        <h2 style="color:#4caf50;">FIL D’ACTUALITÉ / PUBLICITÉ</h2>
-        <div class="news-item">📢 Nouvelle offre d'emploi disponible.</div>
-        <div class="news-item">🎓 Test de compatibilité mis à jour.</div>
-        <div class="news-item">🚀 Découvrez les métiers les plus demandés.</div>
-      </div>
+     <div class="news-container">
+  <h2 class="news-title">FIL D’ACTUALITÉ / PUBLICITÉ</h2>
+
+  <!-- Bande défilante (vide au départ) -->
+  <div class="ticker" aria-label="Fil d’actualité">
+    <div class="ticker-track" id="tickerTrack">
+      <!-- VIDE pour le moment -->
+    </div>
+  </div>
+
+  <!-- Message quand c’est vide -->
+  <p class="news-empty" id="newsEmpty">Aucune actualité pour le moment.</p>
+</div>
 
       <div class="buttons">
         <button class="btn talent">PROFIL TALENT</button>
@@ -203,6 +277,51 @@ async function detectCountryFast(){
       document.getElementById("accueil").style.display = "block";
     }, 5000);
   }
+<script>
+  const tickerTrack = document.getElementById("tickerTrack");
+  const newsEmpty = document.getElementById("newsEmpty");
+
+  // Met à jour l'état "vide / non vide"
+  function refreshTickerState(){
+    const hasItems = tickerTrack.children.length > 0;
+    newsEmpty.style.display = hasItems ? "none" : "block";
+    document.querySelector(".ticker").style.display = hasItems ? "flex" : "none";
+  }
+
+  // Ajoute un élément (texte obligatoire, image optionnelle)
+  function addNewsItem(text, imageUrl = ""){
+    const item = document.createElement("div");
+    item.className = "ticker-item";
+
+    if(imageUrl){
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = "";
+      item.appendChild(img);
+    }
+
+    const span = document.createElement("span");
+    span.textContent = text;
+    item.appendChild(span);
+
+    tickerTrack.appendChild(item);
+
+    // Re-lance l’animation proprement
+    tickerTrack.style.animation = "none";
+    tickerTrack.offsetHeight; // force reflow
+    tickerTrack.style.animation = "";
+
+    refreshTickerState();
+  }
+
+  // AU DÉPART : vide
+  refreshTickerState();
+
+  // EXEMPLES (à activer plus tard)
+  // addNewsItem("📢 Nouvelle offre d'emploi disponible.", "images/pub1.jpg");
+  // addNewsItem("🎓 Test de compatibilité mis à jour.");
+</script>
+  
 })();
 
 </script>
