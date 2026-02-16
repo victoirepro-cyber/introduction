@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>I-JOM — Localisation</title>
+
+  <style>
+    :root{
+      --glass: rgba(255,255,255,.10);
+      --glass2: rgba(255,255,255,.16);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,.75);
+      --accent: #ff2d2d;
+      --accent2: #ff6a6a;
+      --shadow: 0 20px 60px rgba(0,0,0,.55);
+      --radius: 18px;
+    }
+
+    *{ box-sizing: border-box; }
+    html, body{ height:100%; margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--text); }
+
+    /* Video background */
+    .bg {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      filter: saturate(1.05) contrast(1.05);
+    }
+
+    /* Dark overlay + vignette */
+    .shade{
+      position: fixed; inset:0; z-index:-1;
+      background:
+        radial-gradient(1200px 600px at 20% 30%, rgba(255,45,45,.20), transparent 60%),
+        radial-gradient(900px 500px at 80% 70%, rgba(255,106,106,.12), transparent 60%),
+        linear-gradient(to bottom, rgba(0,0,0,.55), rgba(0,0,0,.72));
+    }
+    .vignette{
+      position: fixed; inset:0; z-index:-1;
+      background: radial-gradient(circle at center, transparent 45%, rgba(0,0,0,.65) 100%);
+      pointer-events:none;
+    }
+
+    /* Layout */
+    .wrap{
+      min-height: 100%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 24px;
+    }
+
+    .card{
+      width: min(980px, 100%);
+      display:grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 22px;
+      padding: 22px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+      border: 1px solid rgba(255,255,255,.16);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+    }
+
+    .left{
+      padding: 18px 18px 18px 14px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      gap: 18px;
+    }
+
+    .brand{
+      display:flex; align-items:center; gap: 10px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      font-size: 18px;
+    }
+    .dot{
+      width: 10px; height: 10px; border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 18px rgba(255,45,45,.65);
+    }
+
+    h1{
+      margin: 10px 0 6px;
+      font-size: clamp(26px, 3.2vw, 40px);
+      line-height: 1.05;
+    }
+    .subtitle{
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.5;
+      max-width: 46ch;
+    }
+
+    .badges{
+      display:flex; flex-wrap: wrap; gap: 10px;
+      margin-top: 12px;
+    }
+    .badge{
+      padding: 8px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.14);
+      color: rgba(255,255,255,.85);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .right{
+      padding: 18px;
+      border-radius: calc(var(--radius) - 6px);
+      background: linear-gradient(135deg, rgba(0,0,0,.35), rgba(0,0,0,.18));
+      border: 1px solid rgba(255,255,255,.12);
+      display:flex;
+      flex-direction:column;
+      gap: 14px;
+    }
+
+    label{
+      font-size: 12px;
+      color: rgba(255,255,255,.82);
+      margin-bottom: 6px;
+      display:block;
+    }
+
+    select, button, input[type="radio"]{
+      font-family: inherit;
+    }
+
+    .field select{
+      width: 100%;
+      padding: 12px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.10);
+      color: var(--text);
+      outline: none;
+      appearance: none;
+    }
+    .field select option{ color:#111; }
+
+    .row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .role{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .pill{
+      flex: 1 1 160px;
+      padding: 12px 12px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      cursor:pointer;
+      transition: transform .12s ease, border-color .12s ease, background .12s ease;
+      user-select:none;
+    }
+    .pill:hover{ transform: translateY(-1px); background: rgba(255,255,255,.10); }
+    .pill strong{ font-size: 13px; }
+    .pill span{ font-size: 12px; color: var(--muted); }
+
+    .pill input{ display:none; }
+    .pill.active{
+      border-color: rgba(255,45,45,.55);
+      box-shadow: 0 0 0 3px rgba(255,45,45,.18);
+      background: rgba(255,45,45,.10);
+    }
+
+    .actions{
+      display:flex;
+      gap: 10px;
+      margin-top: 6px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    .btn{
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: none;
+      cursor:pointer;
+      font-weight: 700;
+      letter-spacing: .2px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: white;
+      box-shadow: 0 14px 35px rgba(255,45,45,.22);
+      transition: transform .12s ease, filter .12s ease;
+    }
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.02); }
+
+    .ghost{
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.08);
+      color: rgba(255,255,255,.90);
+      cursor:pointer;
+      width: 160px;
+      transition: transform .12s ease, background .12s ease;
+    }
+    .ghost:hover{ transform: translateY(-1px); background: rgba(255,255,255,.10); }
+
+    .hint{
+      font-size: 12px;
+      color: rgba(255,255,255,.75);
+      line-height: 1.35;
+    }
+    .status{
+      font-size: 12px;
+      color: rgba(255,255,255,.80);
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.08);
+    }
+    .status b{ color: #fff; }
+
+    @media (max-width: 900px){
+      .card{ grid-template-columns: 1fr; }
+      .row{ grid-template-columns: 1fr; }
+      .ghost{ width: 100%; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- VIDEO BACKGROUND -->
+  <video class="bg" autoplay muted loop playsinline>
+    <source src="video/Introduction I-jom.mp4" type="video/mp4">
+  </video>
+  <div class="shade"></div>
+  <div class="vignette"></div>
+
+  <div class="wrap">
+    <div class="card">
+      <section class="left">
+        <div>
+          <div class="brand"><span class="dot"></span> I-JOM</div>
+          <h1>Bienvenue 👋<br/>On te place au bon endroit.</h1>
+          <p class="subtitle">
+            Choisis ton continent, ton pays, puis ton type de compte.
+            Ensuite on te redirige automatiquement vers l’accueil.
+          </p>
+          <div class="badges">
+            <div class="badge">🎥 Vidéo immersive</div>
+            <div class="badge">🌍 Détection auto</div>
+            <div class="badge">💼 Talent / Partenaire</div>
+            <div class="badge">🔒 Bonnes pratiques</div>
+          </div>
+        </div>
+
+        <div class="status" id="statusBox">
+          Statut : <b>prêt</b>. (Détection automatique en cours…)
+        </div>
+      </section>
+
+      <section class="right">
+        <div class="row">
+          <div class="field">
+            <label for="continent">Continent</label>
+            <select id="continent"></select>
+          </div>
+
+          <div class="field">
+            <label for="country">Pays</label>
+            <select id="country">
+              <option value="">— Choisir un pays —</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Type de compte</label>
+          <div class="role" id="roleGroup">
+            <label class="pill active" id="pillTalent">
+              <input type="radio" name="role" value="talent" checked>
+              <div>
+                <strong>Talent</strong><br><span>Je cherche un métier / emploi</span>
+              </div>
+              <span>→</span>
+            </label>
+
+            <label class="pill" id="pillPartner">
+              <input type="radio" name="role" value="partenaire">
+              <div>
+                <strong>Partenaire</strong><br><span>Je recrute / structure</span>
+              </div>
+              <span>→</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="ghost" type="button" onclick="autoDetect()">Détecter auto</button>
+          <button class="btn" type="button" onclick="goNext()">Continuer</button>
+        </div>
+
+        <div class="hint">
+          Astuce : mets ta vidéo ici → <b>video/globe.mp4</b>.
+          Sur mobile, l’autoplay marche mieux si la vidéo est <b>muted</b> (c’est déjà le cas).
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    // -----------------------------
+    // 1) Données continents/pays
+    // -----------------------------
+    const DATA = {
+      "Afrique": [
+        "Côte d'Ivoire","Sénégal","Ghana","Nigéria","Cameroun","Maroc","Tunisie","Algérie","Afrique du Sud","Kenya"
+      ],
+      "Europe": ["France","Belgique","Suisse","Allemagne","Italie","Espagne","Portugal","Royaume-Uni"],
+      "Amérique": ["Canada","États-Unis","Brésil","Mexique","Argentine","Colombie"],
+      "Asie": ["Japon","Chine","Inde","Corée du Sud","Émirats arabes unis","Arabie saoudite"],
+      "Océanie": ["Australie","Nouvelle-Zélande"]
+    };
+
+    const continentSelect = document.getElementById("continent");
+    const countrySelect = document.getElementById("country");
+    const statusBox = document.getElementById("statusBox");
+
+    function setStatus(text){
+      statusBox.innerHTML = "Statut : <b>" + text + "</b>";
+    }
+
+    // Remplir continents
+    function initContinents(){
+      continentSelect.innerHTML = '<option value="">— Choisir un continent —</option>';
+      Object.keys(DATA).forEach(cont => {
+        const opt = document.createElement("option");
+        opt.value = cont;
+        opt.textContent = cont;
+        continentSelect.appendChild(opt);
+      });
+    }
+
+    // Remplir pays selon continent
+    function updateCountries(){
+      const cont = continentSelect.value;
+      countrySelect.innerHTML = '<option value="">— Choisir un pays —</option>';
+      if(!cont || !DATA[cont]) return;
+      DATA[cont].forEach(c => {
+        const opt = document.createElement("option");
+        opt.value = c;
+        opt.textContent = c;
+        countrySelect.appendChild(opt);
+      });
+    }
+
+    continentSelect.addEventListener("change", updateCountries);
+
+    // -----------------------------
+    // 2) UI radio pills (Talent/Partenaire)
+    // -----------------------------
+    const pillTalent = document.getElementById("pillTalent");
+    const pillPartner = document.getElementById("pillPartner");
+    const roleGroup = document.getElementById("roleGroup");
+
+    roleGroup.addEventListener("click", (e) => {
+      const pill = e.target.closest(".pill");
+      if(!pill) return;
+      pillTalent.classList.remove("active");
+      pillPartner.classList.remove("active");
+      pill.classList.add("active");
+      pill.querySelector("input").checked = true;
+    });
+
+    function getRole(){
+      const checked = document.querySelector('input[name="role"]:checked');
+      return checked ? checked.value : "talent";
+    }
+
+    // -----------------------------
+    // 3) Détection automatique
+    //    A) Géolocalisation navigateur -> reverse geocoding Nominatim
+    //    B) Fallback IP -> ipapi.co
+    // -----------------------------
+
+    async function autoDetect(){
+      setStatus("détection…");
+
+      // A) GPS navigateur (nécessite HTTPS + autorisation)
+      if (navigator.geolocation) {
+        try{
+          const pos = await new Promise((resolve, reject) => {
+            navigator.geolocation.getCurrentPosition(resolve, reject, {
+              enableHighAccuracy: false,
+              timeout: 8000,
+              maximumAge: 300000
+            });
+          });
+
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+
+          // Reverse geocoding via Nominatim (OpenStreetMap)
+          // NOTE: ça peut être bloqué selon l’hébergement / limites. Sinon fallback IP.
+          const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+          const r = await fetch(url, { headers: { "Accept":"application/json" }});
+          if(!r.ok) throw new Error("reverse geocoding failed");
+          const j = await r.json();
+
+          const country = j.address && j.address.country ? j.address.country : "";
+          if(country){
+            applyDetectedCountry(country);
+            setStatus("pays détecté (GPS) ✅");
+            return;
+          }
+        }catch(err){
+          // on passe au fallback IP
+        }
+      }
+
+      // B) Fallback IP (moins précis mais souvent suffisant)
+      try{
+        const r = await fetch("https://ipapi.co/json/");
+        if(!r.ok) throw new Error("ipapi failed");
+        const j = await r.json();
+        const country = j && (j.country_name || j.country) ? (j.country_name || j.country) : "";
+        if(country){
+          applyDetectedCountry(country);
+          setStatus("pays détecté (IP) ✅");
+          return;
+        }
+      }catch(err){
+        setStatus("détection impossible — choisis manuellement");
+      }
+    }
+
+    function findContinentByCountry(countryName){
+      // Simple recherche dans DATA
+      const normalized = normalize(countryName);
+      for(const cont of Object.keys(DATA)){
+        for(const c of DATA[cont]){
+          if(normalize(c) === normalized) return cont;
+        }
+      }
+      return "";
+    }
+
+    function applyDetectedCountry(countryName){
+      // Si le pays détecté n'est pas dans la liste, on ne force pas.
+      const cont = findContinentByCountry(countryName);
+      if(!cont){
+        // On met juste le statut, l'utilisateur choisira.
+        setStatus(`détecté: ${countryName} (non listé)`);
+        return;
+      }
+
+      continentSelect.value = cont;
+      updateCountries();
+      // Sélection du pays
+      countrySelect.value = DATA[cont].find(c => normalize(c) === normalize(countryName)) || "";
+      setStatus(`détecté: ${countrySelect.value} ✅`);
+    }
+
+    // -----------------------------
+    // 4) Redirection (Accueil)
+    // -----------------------------
+    // Ici tu définis tes vraies pages.
+    // Exemple:
+    // - Accueil general: accueil.html
+    // - Accueil talent: accueil-talent.html
+    // - Accueil partenaire: accueil-partenaire.html
+    // Ou encore par pays: ci/accueil.html etc.
+    const ROUTES = {
+      talent: "accueil-talent.html",
+      partenaire: "accueil-partenaire.html"
+    };
+
+    function goNext(){
+      const cont = continentSelect.value;
+      const country = countrySelect.value;
+      const role = getRole();
+
+      if(!cont){
+        alert("Veuillez choisir un continent.");
+        return;
+      }
+      if(!country){
+        alert("Veuillez choisir un pays.");
+        return;
+      }
+
+      // Option: stocker le choix (utile pour afficher plus tard)
+      localStorage.setItem("ijom_continent", cont);
+      localStorage.setItem("ijom_country", country);
+      localStorage.setItem("ijom_role", role);
+
+      // Redirection
+      const target = ROUTES[role] || "accueil.html";
+      window.location.href = target;
+    }
+
+    // -----------------------------
+    // 5) Utils
+    // -----------------------------
+    function normalize(s){
+      return (s || "")
+        .toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/’/g,"'")
+        .trim();
+    }
+
+    // Init
+    initContinents();
+    // Détection auto au chargement
+    autoDetect();
+  </script>
+</body>
+</html>
