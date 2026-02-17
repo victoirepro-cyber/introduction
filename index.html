@@ -9,7 +9,6 @@
 html,body{height:100%;margin:0;font-family:Arial, sans-serif}
 
 /* ================= INTRO VIDEO ================= */
-
 #intro{position:fixed;inset:0;overflow:hidden;background:#000;z-index:10}
 video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:transform 900ms ease}
 .shade{position:absolute;inset:0;background:rgba(0,0,0,.25)}
@@ -20,7 +19,6 @@ video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transiti
 }
 
 /* ================= PAGE ACCUEIL ================= */
-
 #accueil{
   display:none;
   min-height:100vh;
@@ -29,108 +27,155 @@ video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transiti
 
 .container{display:flex}
 
-.sidebar {
-    width: 220px;
-    padding: 0; /* on enlève le padding global */
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+/* Sidebar */
+.sidebar{
+  width:220px;
+  padding:0;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  background:#fff;
 }
 
-/* Logo reste en haut */
-.logo img {
-    max-width: 220px;
-    height: auto;
-    display: block;
+.logo img{
+  max-width:220px;
+  height:auto;
+  display:block;
 }
 
-/* Menu prend tout l'espace restant */
-.menu {
-    background-color: white;  /* couleur blanche */
-    flex: 1;                  /* descend jusqu’en bas */
-    padding: 20px;
+/* Menu */
+.menu{
+  background-color:#fff;
+  flex:1;
+  padding:20px;
 }
 
-/* Liens du menu */
-.menu a {
-    display: block;
-    margin: 20px 0;
-    text-decoration: none;
-    color: black;
-    font-style: italic;
+.menu a{
+  display:block;
+  margin:20px 0;
+  text-decoration:none;
+  color:black;
+  font-style:italic;
 }
-  
+
+.menu a:hover{color:red}
+
 .menu a.active{
-    font-size: 22px;     /* plus grand */
-    font-weight: bold;   /* plus épais */
-    color: red;          /* couleur différente */
-}
-  
-.menu a:hover {
-    color: red;
+  font-size:22px;
+  font-weight:bold;
+  color:red;
 }
 
+/* ================= DROPDOWN (copié comme page À propos) ================= */
+.dropdown{position:relative;margin:20px 0;}
+.dropbtn{
+  display:block;
+  text-decoration:none;
+  color:black;
+  font-style:italic;
+}
+.dropbtn:hover{color:red;}
+
+.dropdown-content{
+  display:none;
+  margin-top:8px;
+  margin-left:12px;
+  border-left:2px solid #eee;
+  padding-left:12px;
+}
+
+.dropdown-content a{
+  display:block;
+  margin:10px 0;
+  text-decoration:none;
+  color:#333;
+  font-style:normal;
+  font-size:14px;
+}
+.dropdown-content a:hover{color:red;}
+
+.dropdown:hover .dropdown-content{display:block;}
+
+/* ================= Main content ================= */
 .main-content{
   flex:1;
   padding:30px;
+}
+
+/* Titre même design que page À propos */
+.page-title{
   text-align:center;
+  font-size:48px;
+  letter-spacing:2px;
+  margin:10px 0 30px;
+  color:#2f5fa7;
+  text-transform:uppercase;
+  text-shadow:0 2px 0 rgba(255,255,255,.7);
 }
 
-.news-container{
-  background:#f5f5f5;
-  padding:30px;
-  margin:auto;
-  width:70%;
-  border:2px solid #8bc34a;
+/* Cadre même style/dimension que page À propos */
+.box{
+  background:rgba(255,255,255,.55);
+  border:2px solid #2f5fa7;
   border-radius:10px;
+  padding:22px;
+  max-width:900px;     /* ✅ même largeur que À propos */
+  margin:0 auto;
+  color:#0b2b4b;
+  font-size:18px;
+  line-height:1.6;
+  text-align:left;
 }
 
-.news-item{
-  background:white;
-  padding:15px;
-  margin:10px 0;
-  border-radius:8px;
-  box-shadow:0 2px 5px rgba(0,0,0,.2);
-}
-
+/* Boutons AVANT le fil d'actualité */
 .buttons{
-  margin-top:50px;
+  margin:0 auto 25px;
   display:flex;
   justify-content:center;
   gap:50px;
+  max-width:900px; /* aligné avec le cadre */
 }
 
 .btn{
-  padding:20px 40px;
+  padding:18px 38px;
   font-size:18px;
   cursor:pointer;
   border-radius:8px;
   border:2px solid;
   transition:.3s;
+  background:#fff;
 }
 
-.talent{
-  border-color:red;
-  color:red;
-  background:white;
+.talent{border-color:red;color:red;}
+.talent:hover{background:red;color:white;}
+
+.recruteur{border-color:#1976d2;color:#1976d2;}
+.recruteur:hover{background:#1976d2;color:white;}
+
+/* Fil d’actualité (dans .box) */
+.news-title{
+  margin:0 0 10px;
+  text-align:center;
+  color:#2f5fa7;
+  font-size:22px;
+  text-transform:uppercase;
+  letter-spacing:1px;
 }
 
-.talent:hover{
-  background:red;
-  color:white;
+.ticker{
+  background:rgba(255,255,255,.7);
+  border:1px dashed rgba(47,95,167,.6);
+  border-radius:10px;
+  padding:12px;
+  min-height:48px;
 }
 
-.recruteur{
-  border-color:#1976d2;
-  color:#1976d2;
-  background:white;
+.news-empty{
+  margin:12px 0 0;
+  text-align:center;
+  font-style:italic;
+  opacity:.8;
 }
-
-.recruteur:hover{
-  background:#1976d2;
-  color:white;
-}
-
 </style>
 </head>
 
@@ -148,105 +193,100 @@ video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transiti
 <!-- ================= ACCUEIL ================= -->
 <div id="accueil">
   <div class="container">
-   <div class="sidebar">
-  <div class="logo">
-    <img src="images/LOGO I-JOM.jpg" alt="Logo I-JOM">
-  </div>
 
-  <div class="menu">
-    <a href="#" class="active">ACCUEIL</a>
-    <a href="apropos.html">A PROPOS DE NOUS</a>
+    <div class="sidebar">
+      <div class="logo">
+        <img src="images/LOGO I-JOM.jpg" alt="Logo I-JOM">
+      </div>
 
-    <div class="dropdown">
-      <a href="#" class="dropbtn">PROFIL TALENT ▾</a>
-      <div class="dropdown-content">
-        <a href="#">Connexion</a>
-        <a href="#">Mon Compte</a>
-        <a href="#">Inscription</a>
+      <div class="menu">
+        <a href="index.html" class="active">ACCUEIL</a>
+        <a href="apropos.html">A PROPOS DE NOUS</a>
+
+        <div class="dropdown">
+          <a href="#" class="dropbtn">PROFIL TALENT ▾</a>
+          <div class="dropdown-content">
+            <a href="#">Connexion</a>
+            <a href="#">Mon Compte</a>
+            <a href="#">Inscription</a>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <a href="#" class="dropbtn">RECRUTEUR ▾</a>
+          <div class="dropdown-content">
+            <a href="#">Connexion</a>
+            <a href="#">Espace Recruteur</a>
+            <a href="#">Inscription</a>
+          </div>
+        </div>
+
+        <a href="#">NOUS CONTACTER</a>
       </div>
     </div>
 
-    <div class="dropdown">
-      <a href="#" class="dropbtn">RECRUTEUR ▾</a>
-      <div class="dropdown-content">
-        <a href="#">Connexion</a>
-        <a href="#">Espace Recruteur</a>
-        <a href="#">Inscription</a>
-      </div>
-    </div>
-
-    <a href="#">NOUS CONTACTER</a>
-  </div>
-</div> 
     <div class="main-content">
-      <h1>COMPATIBILITÉ MÉTIER ET RECRUTEMENT</h1>
+      <!-- ✅ Titre design comme À propos -->
+      <div class="page-title">COMPATIBILITÉ MÉTIER ET RECRUTEMENT</div>
 
-      <div class="news-container">
-  <h2 class="news-title">FIL D’ACTUALITÉ / PUBLICITÉ</h2>
-
-  <!-- Bande défilante (vide au départ) -->
-  <div class="ticker" aria-label="Fil d’actualité">
-    <div class="ticker-track" id="tickerTrack">
-      <!-- VIDE pour le moment -->
-    </div>
-  </div>
-
-  <!-- Message quand c’est vide -->
-  <p class="news-empty" id="newsEmpty">Aucune actualité pour le moment.</p>
-</div>
-
+      <!-- ✅ Boutons AVANT le fil d’actu -->
       <div class="buttons">
         <button class="btn talent">PROFIL TALENT</button>
         <button class="btn recruteur">RECRUTEUR</button>
       </div>
+
+      <!-- ✅ Fil d'actu dans un cadre même dimension que À propos -->
+      <div class="box">
+        <h2 class="news-title">FIL D’ACTUALITÉ / PUBLICITÉ</h2>
+
+        <div class="ticker" aria-label="Fil d’actualité">
+          <div class="ticker-track" id="tickerTrack">
+            <!-- VIDE pour le moment -->
+          </div>
+        </div>
+
+        <p class="news-empty" id="newsEmpty">Aucune actualité pour le moment.</p>
+      </div>
     </div>
+
   </div>
 </div>
 
 <script>
-
 const intro = document.getElementById("intro");
 const accueil = document.getElementById("accueil");
 
 if (sessionStorage.getItem("introPlayed")) {
-    // Si l'intro a déjà été jouée
-    intro.style.display = "none";
-    accueil.style.display = "block";
+  intro.style.display = "none";
+  accueil.style.display = "block";
 } else {
+  const msg = document.getElementById("msg");
 
-    const bg  = document.getElementById("bg");
-    const msg = document.getElementById("msg");
+  async function detectCountryFast(){
+    const r = await fetch("https://ipapi.co/json/");
+    const j = await r.json();
+    return j.country_name || "";
+  }
 
-    async function detectCountryFast(){
-      const r = await fetch("https://ipapi.co/json/");
-      const j = await r.json();
-      return j.country_name || "";
-    }
+  (async () => {
+    try{
+      const country = await detectCountryFast();
+      msg.textContent = country ? `Pays détecté : ${country}` : "Pays non détecté";
 
-    (async () => {
-      try{
-        const country = await detectCountryFast();
-        msg.textContent = country ? `Pays détecté : ${country}` : "Pays non détecté";
-
-        setTimeout(() => {
-          msg.textContent = "Chargement…";
-
-          intro.style.display = "none";
-          accueil.style.display = "block";
-
-          // ✅ On enregistre que l’intro a été jouée
-          sessionStorage.setItem("introPlayed", "true");
-
-        }, 5000);
-
-      }catch(e){
+      setTimeout(() => {
+        msg.textContent = "Chargement…";
         intro.style.display = "none";
         accueil.style.display = "block";
         sessionStorage.setItem("introPlayed", "true");
-      }
-    })();
-}
+      }, 5000);
 
+    }catch(e){
+      intro.style.display = "none";
+      accueil.style.display = "block";
+      sessionStorage.setItem("introPlayed", "true");
+    }
+  })();
+}
 </script>
 
 </body>
