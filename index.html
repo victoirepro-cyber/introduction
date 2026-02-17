@@ -205,37 +205,47 @@ video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transiti
 
 <script>
 
-const bg  = document.getElementById("bg");
-const msg = document.getElementById("msg");
+const intro = document.getElementById("intro");
+const accueil = document.getElementById("accueil");
 
-async function detectCountryFast(){
-  const r = await fetch("https://ipapi.co/json/");
-  const j = await r.json();
-  return j.country_name || "";
+if (sessionStorage.getItem("introPlayed")) {
+    // Si l'intro a déjà été jouée
+    intro.style.display = "none";
+    accueil.style.display = "block";
+} else {
+
+    const bg  = document.getElementById("bg");
+    const msg = document.getElementById("msg");
+
+    async function detectCountryFast(){
+      const r = await fetch("https://ipapi.co/json/");
+      const j = await r.json();
+      return j.country_name || "";
+    }
+
+    (async () => {
+      try{
+        const country = await detectCountryFast();
+        msg.textContent = country ? `Pays détecté : ${country}` : "Pays non détecté";
+
+        setTimeout(() => {
+          msg.textContent = "Chargement…";
+
+          intro.style.display = "none";
+          accueil.style.display = "block";
+
+          // ✅ On enregistre que l’intro a été jouée
+          sessionStorage.setItem("introPlayed", "true");
+
+        }, 5000);
+
+      }catch(e){
+        intro.style.display = "none";
+        accueil.style.display = "block";
+        sessionStorage.setItem("introPlayed", "true");
+      }
+    })();
 }
-
-(async () => {
-  try{
-    const country = await detectCountryFast();
-    msg.textContent = country ? `Pays détecté : ${country}` : "Pays non détecté";
-
-    setTimeout(() => {
-      msg.textContent = "Chargement…";
-
-      // Transition vers accueil
-      document.getElementById("intro").style.display = "none";
-      document.getElementById("accueil").style.display = "block";
-
-    }, 5000);
-
-  }catch(e){
-    msg.textContent = "Chargement…";
-    setTimeout(() => {
-      document.getElementById("intro").style.display = "none";
-      document.getElementById("accueil").style.display = "block";
-    }, 5000);
-  }
-})();
 
 </script>
 
