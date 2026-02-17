@@ -174,33 +174,39 @@
 
     <!-- MENU GAUCHE -->
     <div class="sidebar">
-      <div class="logo">
-        <img src="images/LOGO I-JOM.jpg" alt="Logo I-JOM">
+  <div class="logo">
+    <img src="images/LOGO I-JOM.jpg" alt="Logo I-JOM">
+  </div>
+
+  <div class="menu">
+    <a href="index.html">ACCUEIL</a>
+    <a href="apropos.html">A PROPOS DE NOUS</a>
+
+    <!-- PROFIL TALENT (dropdown) -->
+    <div class="dropdown">
+      <!-- Mets class="dropbtn active" sur la page Talent si tu veux le marquer -->
+      <span class="dropbtn active">PROFIL TALENT ▾</span>
+      <div class="dropdown-content">
+        <a href="profil-talent-connexion.html" class="active">Connexion</a>
+        <a href="profil-talent-moncompte.html">Mon Compte</a>
+        <a href="profil-talent-inscription.html">Inscription</a>
       </div>
+    </div>
 
-      <nav class="menu">
-        <a href="index.html">ACCUEIL</a>
-        <a href="apropos.html">A PROPOS DE NOUS</a>
+    <!-- RECRUTEUR (dropdown) -->
+    <div class="dropdown">
+      <span class="dropbtn">RECRUTEUR ▾</span>
+      <div class="dropdown-content">
+        <a href="recruteur-connexion.html">Connexion</a>
+        <a href="recruteur-moncompte.html">Mon Compte</a>
+        <a href="recruteur-inscription.html">Inscription</a>
+      </div>
+    </div>
 
-        <div class="section">PROFIL TALENT</div>
-        <div class="submenu">
-          <!-- Lien "connexion" du menu gauche -->
-          <a class="active" href="profil-talent-connexion.html">- Connexion</a>
-          <a href="profil-talent-moncompte.html">- Mon compte</a>
-          <a href="profil-talent-inscription.html">- Inscription</a>
-        </div>
-
-        <div class="section" style="color:#111; font-weight:700;">RECRUTEUR</div>
-        <div class="submenu">
-          <a href="recruteur-connexion.html">- Connexion</a>
-          <a href="recruteur-moncompte.html">- Mon compte</a>
-          <a href="recruteur-inscription.html">- Inscription</a>
-        </div>
-
-        <a href="partenaires.html" style="font-weight:700;">NOS PARTENAIRES</a>
-        <a href="contact.html" style="font-weight:700;">NOUS CONTACTER</a>
-      </nav>
-    </aside>
+    <a href="partenaires.html">NOS PARTENAIRES</a>
+    <a href="contact.html">NOUS CONTACTER</a>
+  </div>
+</div>
 
     <!-- CONTENU -->
     <main class="content">
