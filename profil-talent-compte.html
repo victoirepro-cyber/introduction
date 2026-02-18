@@ -593,7 +593,7 @@
 
 <script>
   // =========================
-  //  SESSION + COMPTE (Talents)
+  //  SESSION + COMPTE (Talent)
   // =========================
   const KEY_ACCOUNT = "talentAccount";
   const KEY_SESSION = "talentSession";
@@ -611,10 +611,10 @@
     window.location.href = "profil-talent-connexion.html";
   }
 
-  // Charger compte
+  // Charger compte (inscription)
   const savedAccount = readJSON(KEY_ACCOUNT) || {};
 
-  // user (prénom/nom pourront venir plus tard via inscription)
+  // Construire user (prénom/nom pourront venir plus tard)
   const user = {
     prenoms: savedAccount.prenoms || (session?.login || "Utilisateur"),
     nom: savedAccount.nom || "",
@@ -631,7 +631,7 @@
   };
 
   // =========================
-  //  DEMO contenus (inchangés)
+  //  DONNÉES (DEMO) - comme avant
   // =========================
   const notifications = [
     { id: 1, text: "Votre profil a été mis à jour.", date: "2026-02-10", isNew: false },
@@ -709,7 +709,7 @@
   };
 
   // =========================
-  //  Utilitaires (inchangés)
+  //  UTILITAIRES
   // =========================
   function isIdentityVerified(identity){
     return !!(identity.hasIdDocument && identity.hasSelfie && identity.hasPhoneVerified);
@@ -742,7 +742,7 @@
   }
 
   // =========================
-  //  TOPBAR (open/close)
+  //  TOPBAR (dropdowns)
   // =========================
   const btnNotif = document.getElementById("btnNotif");
   const btnMsg = document.getElementById("btnMsg");
@@ -762,9 +762,9 @@
     if(!isOpen) drop.classList.add("open");
   }
 
-  btnNotif.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropNotif); });
-  btnMsg.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropMsg); });
-  btnSettings.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropSettings); });
+  btnNotif?.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropNotif); });
+  btnMsg?.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropMsg); });
+  btnSettings?.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropSettings); });
   document.addEventListener("click", ()=> closeAllDrops());
 
   function renderTopbar(){
@@ -801,25 +801,23 @@
       : `<div class="item small">Aucun message.</div>`;
   }
 
-  document.getElementById("goNotifPage").addEventListener("click", ()=> window.location.href = "notifications.html");
-  document.getElementById("goMsgPage").addEventListener("click", ()=> window.location.href = "messagerie.html");
+  document.getElementById("goNotifPage")?.addEventListener("click", ()=> window.location.href = "notifications.html");
+  document.getElementById("goMsgPage")?.addEventListener("click", ()=> window.location.href = "messagerie.html");
 
-  document.getElementById("goEditProfile").addEventListener("click", ()=> window.location.href="profil-talent-inscription.html");
-  document.getElementById("goLang").addEventListener("click", ()=> window.location.href="langue.html");
-  document.getElementById("goRequest").addEventListener("click", ()=> window.location.href="requete.html");
+  document.getElementById("goEditProfile")?.addEventListener("click", ()=> window.location.href="profil-talent-inscription.html");
+  document.getElementById("goLang")?.addEventListener("click", ()=> window.location.href="langue.html");
+  document.getElementById("goRequest")?.addEventListener("click", ()=> window.location.href="requete.html");
 
-  document.getElementById("logout").addEventListener("click", ()=>{
+  document.getElementById("logout")?.addEventListener("click", ()=>{
     localStorage.removeItem(KEY_SESSION);
     window.location.href = "profil-talent-connexion.html";
   });
 
   // =========================
-  //  Profil header + photo
+  //  PROFIL HEADER + PHOTO
   // =========================
   function renderProfileHeader(){
-    const fullName = (user.prenoms + " " + user.nom).trim();
-    document.getElementById("fullName").textContent = fullName || "Utilisateur";
-    document.getElementById("pageTitle").textContent = (fullName || "MON COMPTE");
+    document.getElementById("fullName").textContent = `${user.prenoms} ${user.nom}`.trim();
     document.getElementById("continent").textContent = user.continent;
     document.getElementById("country").textContent = user.pays;
     document.getElementById("city").textContent = user.ville;
@@ -845,7 +843,7 @@
     }
   }
 
-  photoInput.addEventListener("change", (e)=>{
+  photoInput?.addEventListener("change", (e)=>{
     const file = e.target.files && e.target.files[0];
     if(!file) return;
     const reader = new FileReader();
@@ -856,15 +854,15 @@
     reader.readAsDataURL(file);
   });
 
-  document.getElementById("removePhoto").addEventListener("click", ()=>{
+  document.getElementById("removePhoto")?.addEventListener("click", ()=>{
     localStorage.removeItem(KEY_PHOTO);
     loadPhoto();
   });
 
   // =========================
-  //  Sections (inchangées)
+  //  SECTIONS (IMPORTANT)
   // =========================
-  const sectionsRoot = document.getElementById("sections");
+  const sectionsRoot = document.getElementById("sections"); // ✅ UNE SEULE FOIS
 
   function createSection(title, innerHtml){
     const wrap = document.createElement("section");
@@ -1002,6 +1000,7 @@
 
   function renderYearsExperience(){
     const parts = [];
+
     parts.push(`
       <tr>
         <td colspan="2"><b>Dans l’ensemble</b></td>
@@ -1048,18 +1047,15 @@
 
       if(t.type === "lecture"){
         actionHtml = `<span class="small">Lire</span>`;
-        if(t.result){
-          resultHtml = `
-            <audio controls style="width:220px; max-width:100%;">
-              <source src="${escapeHtml(t.result)}" type="audio/mpeg" />
-              Votre navigateur ne supporte pas l'audio.
-            </audio>
-          `;
-        } else {
-          resultHtml = "-";
-        }
+        resultHtml = t.result ? `
+          <audio controls style="width:220px; max-width:100%;">
+            <source src="${escapeHtml(t.result)}" type="audio/mpeg" />
+            Votre navigateur ne supporte pas l'audio.
+          </audio>
+        ` : "-";
       } else {
         const label = getTestActionLabel(t.doneAt);
+
         if(label === "Effectuer le test"){
           actionHtml = `<button class="action-btn primary" data-action="doExtraTest" data-index="${idx}">${label}</button>`;
         } else if(label === "Repasser le test"){
@@ -1068,13 +1064,9 @@
           actionHtml = `<span class="pill ok">${label}</span>`;
         }
 
-        if(t.result === null || t.result === undefined){
-          resultHtml = "-";
-        } else if(typeof t.result === "number"){
-          resultHtml = `${t.result}%`;
-        } else {
-          resultHtml = escapeHtml(t.result);
-        }
+        if(t.result === null || t.result === undefined) resultHtml = "-";
+        else if(typeof t.result === "number") resultHtml = `${t.result}%`;
+        else resultHtml = escapeHtml(t.result);
       }
 
       return `
@@ -1137,14 +1129,55 @@
     sectionsRoot.querySelector(".section")?.classList.add("open");
   }
 
-  const sectionsRoot = document.getElementById("sections");
+  // ✅ Événements (déclarés UNE fois, pas dans renderAllSections)
+  sectionsRoot.addEventListener("click", (e)=>{
+    const btn = e.target.closest("button[data-action]");
+    if(!btn) return;
+    const action = btn.getAttribute("data-action");
+    const index = Number(btn.getAttribute("data-index"));
 
-  // INIT
+    if(action === "doTest"){
+      const score = Math.floor(60 + Math.random()*40);
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+      metiersCompatibles[index].test.lastDoneAt = todayStr;
+      metiersCompatibles[index].test.score = score;
+      alert(`Test effectué (démo). Score: ${score}%`);
+      renderAllSections();
+    }
+
+    if(action === "doExtraTest"){
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+      testsComplementaires[index].doneAt = todayStr;
+
+      if(testsComplementaires[index].designation.toLowerCase().includes("orthographe")){
+        const options = ["Assez bien", "Bien", "Très bien", "Excellent"];
+        testsComplementaires[index].result = options[Math.floor(Math.random()*options.length)];
+      } else if(testsComplementaires[index].designation.toLowerCase().includes("personnalité")){
+        testsComplementaires[index].result = "Organisée, Rigoureuse, Sens de l’analyse";
+      } else {
+        testsComplementaires[index].result = Math.floor(50 + Math.random()*50);
+      }
+
+      alert("Test effectué (démo).");
+      renderAllSections();
+    }
+  });
+
+  sectionsRoot.addEventListener("change", (e)=>{
+    const r = e.target;
+    if(!(r instanceof HTMLInputElement)) return;
+    if(!r.name.startsWith("showOffer_")) return;
+    const idx = Number(r.name.split("_")[1]);
+    metiersCompatibles[idx].showForOffers = r.value;
+  });
+
+  // =========================
+  //  INIT
+  // =========================
   renderTopbar();
   renderProfileHeader();
   loadPhoto();
   renderAllSections();
 </script>
-
-</body>
-</html>
