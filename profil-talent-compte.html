@@ -566,11 +566,12 @@
   </div>
 
   <script>
-    // =========================
-//  LIEN CONNEXION -> COMPTE
-// =========================
+/* =========================
+   LIEN CONNEXION -> COMPTE
+   ========================= */
 const KEY_ACCOUNT = "talentAccount";   // créé à l'inscription
 const KEY_SESSION = "talentSession";   // créé à la connexion / inscription
+const KEY_PHOTO   = "ijom_photo_id";   // photo d'identité (démo)
 
 function readJSON(key){
   const raw = localStorage.getItem(key);
@@ -578,21 +579,19 @@ function readJSON(key){
   try { return JSON.parse(raw); } catch(e){ return null; }
 }
 
+/* 1) Protection: si pas connecté => retour connexion */
 const session = readJSON(KEY_SESSION);
 if(!session || session.connected !== true){
-  // Pas connecté => retour à la page connexion Talent
   window.location.href = "profil-talent-connexion.html";
 }
-    /***********************
-     * DONNÉES (DEMO)
-     * Remplace par tes vraies données (API / base de données) plus tard.
-     ***********************/
-   // Charger le compte enregistré (inscription)
+
+/* 2) Charger le compte enregistré */
 const savedAccount = readJSON(KEY_ACCOUNT) || {};
 
-// Construire l'objet user à partir du compte enregistré
+/* 3) Construire l'utilisateur affiché
+   (Si prénom/nom pas encore enregistrés, on affiche le login.) */
 const user = {
-  prenoms: savedAccount.prenoms || "",     // (vide pour l'instant si pas demandé à l'inscription)
+  prenoms: savedAccount.prenoms || (session && session.login ? session.login : "Utilisateur"),
   nom: savedAccount.nom || "",
   email: savedAccount.email || "",
   continent: savedAccount.continent || "Afrique",
@@ -606,651 +605,579 @@ const user = {
   }
 };
 
-// Si pas de prénom/nom encore, on affiche le login
-if(!user.prenoms && !user.nom){
-  user.prenoms = session?.login || "Utilisateur";
-  user.nom = "";
+/***********************
+ * DONNÉES (DEMO)
+ * (inchangées)
+ ***********************/
+const notifications = [
+  { id: 1, text: "Votre profil a été mis à jour.", date: "2026-02-10", isNew: false },
+  { id: 2, text: "Nouvelle offre liée à votre métier compatible.", date: "2026-02-17", isNew: true },
+  { id: 3, text: "Un recruteur a consulté votre profil.", date: "2026-02-18", isNew: true }
+];
+
+const messages = [
+  { id: 1, from: "Recruteur - Entreprise X", text: "Bonjour, êtes-vous disponible pour un échange ?", date: "2026-02-18", isNew: true },
+  { id: 2, from: "Support I-JOM", text: "Votre demande a été reçue.", date: "2026-02-16", isNew: false }
+];
+
+const metiersCompatibles = [
+  {
+    metier: "Conducteur de travaux",
+    pdfUrl: "docs/metier_conducteur_travaux.pdf",
+    test: { lastDoneAt: "2025-10-01", score: 78 },
+    showForOffers: "oui"
+  },
+  {
+    metier: "Assistant(e) chef de chantier",
+    pdfUrl: "docs/metier_chef_chantier.pdf",
+    test: { lastDoneAt: null, score: null },
+    showForOffers: "non"
+  }
+];
+
+const formations = [
+  { annee: "2020-07-15", diplome: "Licence", filiere: "Génie civil", fichier: "docs/diplome_licence.pdf" },
+  { annee: "2017-06-20", diplome: "BTS", filiere: "Bâtiment", fichier: "docs/diplome_bts.pdf" }
+];
+
+const experiences = [
+  { debut: "2023-01-01", fin: "2024-12-31", statut: "CDD", poste: "Assistante du Directeur de travaux", direction: "Direction Travaux", secteur: "BTP" },
+  { debut: "2021-03-01", fin: "2022-10-31", statut: "Stage", poste: "Assistante chantier", direction: "Service Chantier", secteur: "BTP" }
+];
+
+const yearsExperience = {
+  overall: 4,
+  byMetier: [
+    { label: "Assistante du Directeur de travaux", years: 2 },
+    { label: "Assistante chantier", years: 2 }
+  ],
+  byFiliere: [{ label: "Génie civil", years: 4 }],
+  byDirection: [
+    { label: "Direction Travaux", years: 2 },
+    { label: "Service Chantier", years: 2 }
+  ],
+  byDiplome: [
+    { label: "Licence", years: 2 },
+    { label: "BTS", years: 2 }
+  ]
+};
+
+const testsComplementaires = [
+  { designation: "Lecture langue maternelle", type: "lecture", langue: "Français", doneAt: "2026-02-01", result: "audio/fr_lecture.mp3" },
+  { designation: "Test d’orthographe langue maternelle", type: "ia", doneAt: "2025-12-10", result: "Bien" },
+  { designation: "Test de personnalité professionnelle", type: "ia", doneAt: null, result: null },
+  { designation: "Test de logique", type: "ia", doneAt: "2025-11-20", result: 64 },
+  { designation: "Test d’aptitude verbale", type: "ia", doneAt: null, result: null }
+];
+
+const galerie = [
+  { type:"image", src:"images/photo1.jpg", caption:"Photo 1" },
+  { type:"image", src:"images/photo2.jpg", caption:"Photo 2" },
+  { type:"video", src:"videos/video1.mp4", caption:"Vidéo 1" }
+];
+
+const orientations = {
+  metiers: "Orientation: Nous vous recommandons de repasser le test du métier dont le score est inférieur à 70%.",
+  formation: "",
+  experience: "",
+  years: "",
+  tests: "Orientation: Complétez le test de personnalité pour affiner vos métiers compatibles."
+};
+
+/***********************
+ * LOGIQUE UTILITAIRE
+ ***********************/
+function isIdentityVerified(identity){
+  return !!(identity.hasIdDocument && identity.hasSelfie && identity.hasPhoneVerified);
 }
 
-    };
+function monthsBetween(dateStrA, dateStrB){
+  const a = new Date(dateStrA + "T00:00:00");
+  const b = new Date(dateStrB + "T00:00:00");
+  let months = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+  if (b.getDate() < a.getDate()) months -= 1;
+  return months;
+}
 
-    // Notifications (DEMO)
-    const notifications = [
-      { id: 1, text: "Votre profil a été mis à jour.", date: "2026-02-10", isNew: false },
-      { id: 2, text: "Nouvelle offre liée à votre métier compatible.", date: "2026-02-17", isNew: true },
-      { id: 3, text: "Un recruteur a consulté votre profil.", date: "2026-02-18", isNew: true }
-    ];
+function getTestActionLabel(doneAt){
+  if(!doneAt) return "Effectuer le test";
+  const today = new Date();
+  const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+  const m = monthsBetween(doneAt, todayStr);
+  if(m >= 3) return "Repasser le test";
+  return "Test déjà effectué";
+}
 
-    // Messages (DEMO)
-    const messages = [
-      { id: 1, from: "Recruteur - Entreprise X", text: "Bonjour, êtes-vous disponible pour un échange ?", date: "2026-02-18", isNew: true },
-      { id: 2, from: "Support I-JOM", text: "Votre demande a été reçue.", date: "2026-02-16", isNew: false }
-    ];
+function escapeHtml(str){
+  return String(str)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
 
-    // Métiers compatibles (DEMO)
-    const metiersCompatibles = [
-      {
-        metier: "Conducteur de travaux",
-        pdfUrl: "docs/metier_conducteur_travaux.pdf",
-        test: {
-          lastDoneAt: "2025-10-01", // null si jamais fait
-          score: 78 // null si pas fait
-        },
-        showForOffers: "oui" // "oui" | "non"
-      },
-      {
-        metier: "Assistant(e) chef de chantier",
-        pdfUrl: "docs/metier_chef_chantier.pdf",
-        test: {
-          lastDoneAt: null,
-          score: null
-        },
-        showForOffers: "non"
-      }
-    ];
+/***********************
+ * TOPBAR: dropdowns + compteurs
+ ***********************/
+const btnNotif = document.getElementById("btnNotif");
+const btnMsg = document.getElementById("btnMsg");
+const btnSettings = document.getElementById("btnSettings");
+const dropNotif = document.getElementById("dropNotif");
+const dropMsg = document.getElementById("dropMsg");
+const dropSettings = document.getElementById("dropSettings");
 
-    // Formation (DEMO)
-    const formations = [
-      { annee: "2020-07-15", diplome: "Licence", filiere: "Génie civil", fichier: "docs/diplome_licence.pdf" },
-      { annee: "2017-06-20", diplome: "BTS", filiere: "Bâtiment", fichier: "docs/diplome_bts.pdf" }
-    ];
+function closeAllDrops(){
+  dropNotif.classList.remove("open");
+  dropMsg.classList.remove("open");
+  dropSettings.classList.remove("open");
+}
+function toggleDrop(drop){
+  const isOpen = drop.classList.contains("open");
+  closeAllDrops();
+  if(!isOpen) drop.classList.add("open");
+}
 
-    // Expériences (DEMO)
-    const experiences = [
-      { debut: "2023-01-01", fin: "2024-12-31", statut: "CDD", poste: "Assistante du Directeur de travaux", direction: "Direction Travaux", secteur: "BTP" },
-      { debut: "2021-03-01", fin: "2022-10-31", statut: "Stage", poste: "Assistante chantier", direction: "Service Chantier", secteur: "BTP" }
-    ];
+btnNotif.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropNotif); });
+btnMsg.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropMsg); });
+btnSettings.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropSettings); });
+document.addEventListener("click", ()=> closeAllDrops());
 
-    // Années d'expérience (DEMO)
-    const yearsExperience = {
-      overall: 4,
-      byMetier: [
-        { label: "Assistante du Directeur de travaux", years: 2 },
-        { label: "Assistante chantier", years: 2 }
-      ],
-      byFiliere: [
-        { label: "Génie civil", years: 4 }
-      ],
-      byDirection: [
-        { label: "Direction Travaux", years: 2 },
-        { label: "Service Chantier", years: 2 }
-      ],
-      byDiplome: [
-        { label: "Licence", years: 2 },
-        { label: "BTS", years: 2 }
-      ]
-    };
+function renderTopbar(){
+  const notifNew = notifications.filter(n=>n.isNew).length;
+  const msgNew = messages.filter(m=>m.isNew).length;
 
-    // Tests complémentaires (DEMO)
-    const testsComplementaires = [
-      { designation: "Lecture langue maternelle", type: "lecture", langue: "Français", doneAt: "2026-02-01", result: "audio/fr_lecture.mp3" },
-      { designation: "Test d’orthographe langue maternelle", type: "ia", doneAt: "2025-12-10", result: "Bien" },
-      { designation: "Test de personnalité professionnelle", type: "ia", doneAt: null, result: null },
-      { designation: "Test de logique", type: "ia", doneAt: "2025-11-20", result: 64 },
-      { designation: "Test d’aptitude verbale", type: "ia", doneAt: null, result: null }
-    ];
+  document.getElementById("notifCount").textContent = notifNew;
+  document.getElementById("msgCount").textContent = msgNew;
 
-    // Galerie (DEMO)
-    const galerie = [
-      { type:"image", src:"images/photo1.jpg", caption:"Photo 1" },
-      { type:"image", src:"images/photo2.jpg", caption:"Photo 2" },
-      { type:"video", src:"videos/video1.mp4", caption:"Vidéo 1" }
-    ];
+  document.getElementById("dropNotifHint").textContent = notifNew ? `${notifNew} nouvelle(s)` : "Aucune nouvelle";
+  document.getElementById("dropMsgHint").textContent = msgNew ? `${msgNew} nouveau(x)` : "Aucun nouveau";
 
-    // Orientations (si vide => ne s'affiche pas)
-    const orientations = {
-      metiers: "Orientation: Nous vous recommandons de repasser le test du métier dont le score est inférieur à 70%.",
-      formation: "", // vide => caché
-      experience: "",
-      years: "",
-      tests: "Orientation: Complétez le test de personnalité pour affiner vos métiers compatibles."
-    };
+  const notifList = document.getElementById("notifList");
+  notifList.innerHTML = notifications.length
+    ? notifications.map(n=>`
+      <div class="item">
+        <div style="display:flex; justify-content:space-between; gap:10px;">
+          <div>${n.isNew ? "🆕 " : ""}${escapeHtml(n.text)}</div>
+          <div class="small">${escapeHtml(n.date)}</div>
+        </div>
+      </div>
+    `).join("")
+    : `<div class="item small">Aucune notification.</div>`;
 
-    /***********************
-     * LOGIQUE UTILITAIRE
-     ***********************/
-    function isIdentityVerified(identity){
-      // Conditions EXEMPLE. Tu ajusteras plus tard.
-      return !!(identity.hasIdDocument && identity.hasSelfie && identity.hasPhoneVerified);
-    }
+  const msgList = document.getElementById("msgList");
+  msgList.innerHTML = messages.length
+    ? messages.map(m=>`
+      <div class="item">
+        <div><b>${escapeHtml(m.from)}</b> ${m.isNew ? "🆕" : ""}</div>
+        <div class="small" style="margin-top:4px;">${escapeHtml(m.text)}</div>
+        <div class="small" style="margin-top:6px;">${escapeHtml(m.date)}</div>
+      </div>
+    `).join("")
+    : `<div class="item small">Aucun message.</div>`;
+}
 
-    function monthsBetween(dateStrA, dateStrB){
-      // dateStrA/B format YYYY-MM-DD
-      const a = new Date(dateStrA + "T00:00:00");
-      const b = new Date(dateStrB + "T00:00:00");
-      let months = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
-      // si le jour du mois n'est pas atteint, on retire 1 mois
-      if (b.getDate() < a.getDate()) months -= 1;
-      return months;
-    }
+document.getElementById("goNotifPage").addEventListener("click", ()=>{
+  window.location.href = "notifications.html";
+});
+document.getElementById("goMsgPage").addEventListener("click", ()=>{
+  window.location.href = "messagerie.html";
+});
 
-    function getTestActionLabel(doneAt){
-      if(!doneAt) return "Effectuer le test";
-      const today = new Date();
-      const yyyy = today.getFullYear();
-      const mm = String(today.getMonth()+1).padStart(2,'0');
-      const dd = String(today.getDate()).padStart(2,'0');
-      const todayStr = `${yyyy}-${mm}-${dd}`;
-
-      const m = monthsBetween(doneAt, todayStr);
-      if(m >= 3) return "Repasser le test";
-      return "Test déjà effectué";
-    }
-
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    /***********************
-     * TOPBAR: dropdowns + compteurs
-     * (Lien email: en frontend pur on ne peut pas “envoyer un mail” automatiquement.
-     *  On prépare le branchement: backend/notification service plus tard.)
-     ***********************/
-    const btnNotif = document.getElementById("btnNotif");
-    const btnMsg = document.getElementById("btnMsg");
-    const btnSettings = document.getElementById("btnSettings");
-    const dropNotif = document.getElementById("dropNotif");
-    const dropMsg = document.getElementById("dropMsg");
-    const dropSettings = document.getElementById("dropSettings");
-
-    function closeAllDrops(){
-      dropNotif.classList.remove("open");
-      dropMsg.classList.remove("open");
-      dropSettings.classList.remove("open");
-    }
-    function toggleDrop(drop){
-      const isOpen = drop.classList.contains("open");
-      closeAllDrops();
-      if(!isOpen) drop.classList.add("open");
-    }
-
-    btnNotif.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropNotif); });
-    btnMsg.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropMsg); });
-    btnSettings.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropSettings); });
-
-    document.addEventListener("click", ()=> closeAllDrops());
-
-    // Remplir listes + compteurs
-    function renderTopbar(){
-      const notifNew = notifications.filter(n=>n.isNew).length;
-      const msgNew = messages.filter(m=>m.isNew).length;
-
-      document.getElementById("notifCount").textContent = notifNew;
-      document.getElementById("msgCount").textContent = msgNew;
-
-      document.getElementById("dropNotifHint").textContent = notifNew ? `${notifNew} nouvelle(s)` : "Aucune nouvelle";
-      document.getElementById("dropMsgHint").textContent = msgNew ? `${msgNew} nouveau(x)` : "Aucun nouveau";
-
-      const notifList = document.getElementById("notifList");
-      notifList.innerHTML = notifications.length
-        ? notifications.map(n=>`
-          <div class="item">
-            <div style="display:flex; justify-content:space-between; gap:10px;">
-              <div>${n.isNew ? "🆕 " : ""}${escapeHtml(n.text)}</div>
-              <div class="small">${escapeHtml(n.date)}</div>
-            </div>
-          </div>
-        `).join("")
-        : `<div class="item small">Aucune notification.</div>`;
-
-      const msgList = document.getElementById("msgList");
-      msgList.innerHTML = messages.length
-        ? messages.map(m=>`
-          <div class="item">
-            <div><b>${escapeHtml(m.from)}</b> ${m.isNew ? "🆕" : ""}</div>
-            <div class="small" style="margin-top:4px;">${escapeHtml(m.text)}</div>
-            <div class="small" style="margin-top:6px;">${escapeHtml(m.date)}</div>
-          </div>
-        `).join("")
-        : `<div class="item small">Aucun message.</div>`;
-
-      // Lien “email”
-      // En vrai: quand une notif arrive, ton serveur envoie un email à user.email.
-      // Ici: démo => mailto (manuel).
-      // Tu peux supprimer si tu ne veux pas du tout de mailto.
-      if(notifNew > 0){
-        // Exemple: préparer un mail (manuel) à l'utilisateur
-        // (remplace subject/body si tu veux)
-        // window.location.href = `mailto:${user.email}?subject=Nouvelle notification I-JOM&body=Vous avez ${notifNew} nouvelle(s) notification(s).`;
-      }
-    }
-
-    document.getElementById("goNotifPage").addEventListener("click", ()=>{
-      // Page des notifications
-      window.location.href = "notifications.html";
-    });
-    document.getElementById("goMsgPage").addEventListener("click", ()=>{
-      // Page de messagerie
-      window.location.href = "messagerie.html";
-    });
-
-  document.getElementById("goEditProfile").addEventListener("click", ()=>{
+/* ✅ Ce que tu as demandé :
+   Modifications du profil => page inscription (mode modifier si connecté) */
+document.getElementById("goEditProfile").addEventListener("click", ()=>{
   window.location.href = "profil-talent-inscription.html";
 });
-    document.getElementById("goLang").addEventListener("click", ()=> window.location.href="langue.html");
-    document.getElementById("goRequest").addEventListener("click", ()=> window.location.href="requete.html");
-    document.getElementById("logout").addEventListener("click", ()=>{
-      // Déconnexion (démo)
-      localStorage.removeItem("ijom_session");
-      window.location.href = "connexion-talent.html";
-    });
+document.getElementById("goLang").addEventListener("click", ()=> window.location.href="langue.html");
+document.getElementById("goRequest").addEventListener("click", ()=> window.location.href="requete.html");
 
-    /***********************
-     * PROFIL: Nom, badge, localisation, emploi, photo
-     ***********************/
-    function renderProfileHeader(){
-      document.getElementById("fullName").textContent = `${user.prenoms} ${user.nom}`;
-      document.getElementById("continent").textContent = user.continent;
-      document.getElementById("country").textContent = user.pays;
-      document.getElementById("city").textContent = user.ville;
-      document.getElementById("jobTitle").textContent = user.emploi;
+/* ✅ Déconnexion : supprimer talentSession */
+document.getElementById("logout").addEventListener("click", ()=>{
+  localStorage.removeItem(KEY_SESSION);
+  window.location.href = "profil-talent-connexion.html";
+});
 
-      const verified = isIdentityVerified(user.identity);
-      document.getElementById("verifiedBadge").style.display = verified ? "inline-flex" : "none";
-    }
+/***********************
+ * PROFIL: Nom, badge, localisation, emploi, photo
+ ***********************/
+function renderProfileHeader(){
+  const fullName = (user.prenoms + " " + user.nom).trim();
+  document.getElementById("fullName").textContent = fullName || "Utilisateur";
+  document.getElementById("continent").textContent = user.continent;
+  document.getElementById("country").textContent = user.pays;
+  document.getElementById("city").textContent = user.ville;
+  document.getElementById("jobTitle").textContent = user.emploi;
 
-    // Photo: stockée en localStorage (DEMO)
-    const photoImg = document.getElementById("photoImg");
-    const photoPlaceholder = document.getElementById("photoPlaceholder");
-    const photoInput = document.getElementById("photoInput");
+  const verified = isIdentityVerified(user.identity);
+  document.getElementById("verifiedBadge").style.display = verified ? "inline-flex" : "none";
+}
 
-    function loadPhoto(){
-      const saved = localStorage.getItem("ijom_photo_id");
-      if(saved){
-        photoImg.src = saved;
-        photoImg.style.display = "block";
-        photoPlaceholder.style.display = "none";
-      } else {
-        photoImg.style.display = "none";
-        photoPlaceholder.style.display = "block";
-      }
-    }
+/* Photo (démo) */
+const photoImg = document.getElementById("photoImg");
+const photoPlaceholder = document.getElementById("photoPlaceholder");
+const photoInput = document.getElementById("photoInput");
 
-    photoInput.addEventListener("change", (e)=>{
-      const file = e.target.files && e.target.files[0];
-      if(!file) return;
-      const reader = new FileReader();
-      reader.onload = ()=>{
-        localStorage.setItem("ijom_photo_id", reader.result);
-        loadPhoto();
-      };
-      reader.readAsDataURL(file);
-    });
+function loadPhoto(){
+  const saved = localStorage.getItem(KEY_PHOTO);
+  if(saved){
+    photoImg.src = saved;
+    photoImg.style.display = "block";
+    photoPlaceholder.style.display = "none";
+  } else {
+    photoImg.style.display = "none";
+    photoPlaceholder.style.display = "block";
+  }
+}
 
-    document.getElementById("removePhoto").addEventListener("click", ()=>{
-      localStorage.removeItem("ijom_photo_id");
-      loadPhoto();
-    });
-
-    /***********************
-     * SECTIONS + TABLES
-     * Mentions cliquables pour afficher/masquer.
-     ***********************/
-    const sectionsRoot = document.getElementById("sections");
-
-    function createSection(title, innerHtml){
-      const wrap = document.createElement("section");
-      wrap.className = "section";
-      wrap.innerHTML = `
-        <button class="section-title" type="button">
-          <span>${escapeHtml(title)}</span>
-          <span class="chev">▼</span>
-        </button>
-        <div class="section-body">${innerHtml}</div>
-      `;
-      wrap.querySelector(".section-title").addEventListener("click", ()=>{
-        wrap.classList.toggle("open");
-      });
-      return wrap;
-    }
-
-    function orientationBlock(text){
-      if(!text || !text.trim()) return "";
-      return `<div class="orientation"><b>Orientation</b><br/>${escapeHtml(text)}</div>`;
-    }
-
-    // 1) MES METIERS COMPATIBLES (6 colonnes)
-    function renderMetiers(){
-      const rows = metiersCompatibles.map((m, idx)=>{
-        const actionLabel = getTestActionLabel(m.test.lastDoneAt);
-        const score = (m.test.score === null || m.test.score === undefined) ? "-" : `${m.test.score}%`;
-
-        const actionPill =
-          actionLabel === "Test déjà effectué" ? `<span class="pill ok">${actionLabel}</span>` :
-          actionLabel === "Repasser le test" ? `<span class="pill warn">${actionLabel}</span>` :
-          `<button class="action-btn primary" data-action="doTest" data-index="${idx}">${actionLabel}</button>`;
-
-        return `
-          <tr>
-            <td>${idx+1}</td>
-            <td><b>${escapeHtml(m.metier)}</b></td>
-            <td>
-              ${m.pdfUrl ? `<a class="link-btn" href="${escapeHtml(m.pdfUrl)}" target="_blank">Voir PDF</a>` : "-"}
-              <div class="small">Info complémentaire</div>
-            </td>
-            <td>${actionPill}</td>
-            <td>${score}</td>
-            <td>
-              <div class="switch">
-                <label class="radio">
-                  <input type="radio" name="showOffer_${idx}" value="oui" ${m.showForOffers==="oui"?"checked":""}/>
-                  Oui
-                </label>
-                <label class="radio">
-                  <input type="radio" name="showOffer_${idx}" value="non" ${m.showForOffers==="non"?"checked":""}/>
-                  Non
-                </label>
-              </div>
-              <div class="small">Afficher mon profil pour les offres liées</div>
-            </td>
-          </tr>
-        `;
-      }).join("");
-
-      const html = `
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>N°</th>
-                <th>Métier</th>
-                <th>Info métier (PDF)</th>
-                <th>Test IA</th>
-                <th>% Test</th>
-                <th>Profil visible pour offres</th>
-              </tr>
-            </thead>
-            <tbody>${rows || `<tr><td colspan="6" class="small">Aucun métier compatible pour le moment.</td></tr>`}</tbody>
-          </table>
-        </div>
-        ${orientationBlock(orientations.metiers)}
-      `;
-      return html;
-    }
-
-    // 2) FORMATION (4 colonnes)
-    function renderFormation(){
-      const rows = formations.map(f=>`
-        <tr>
-          <td>${escapeHtml(f.annee)}</td>
-          <td>${escapeHtml(f.diplome)}</td>
-          <td>${escapeHtml(f.filiere)}</td>
-          <td>${f.fichier ? `<a class="link-btn" href="${escapeHtml(f.fichier)}" target="_blank">Voir</a>` : "-"}</td>
-        </tr>
-      `).join("");
-
-      return `
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Année d’obtention (date)</th>
-                <th>Diplôme (liste)</th>
-                <th>Filière</th>
-                <th>Diplôme numérisé</th>
-              </tr>
-            </thead>
-            <tbody>${rows || `<tr><td colspan="4" class="small">Aucune formation renseignée.</td></tr>`}</tbody>
-          </table>
-        </div>
-        ${orientationBlock(orientations.formation)}
-      `;
-    }
-
-    // 3) EXPERIENCE PROFESSIONNELLE (5 colonnes)
-    function renderExperience(){
-      const rows = experiences.map(e=>`
-        <tr>
-          <td>${escapeHtml(e.debut)} → ${escapeHtml(e.fin)}</td>
-          <td>${escapeHtml(e.statut)}</td>
-          <td>${escapeHtml(e.poste)}</td>
-          <td>${escapeHtml(e.direction)}</td>
-          <td>${escapeHtml(e.secteur)}</td>
-        </tr>
-      `).join("");
-
-      return `
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Période (début/fin)</th>
-                <th>Statut</th>
-                <th>Poste</th>
-                <th>Direction / Service</th>
-                <th>Secteur d’activité</th>
-              </tr>
-            </thead>
-            <tbody>${rows || `<tr><td colspan="5" class="small">Aucune expérience renseignée.</td></tr>`}</tbody>
-          </table>
-        </div>
-        ${orientationBlock(orientations.experience)}
-      `;
-    }
-
-    // 4) NOMBRE D’ANNEES D’EXPERIENCES PROFESSIONNELLES (3 colonnes, fusion logique)
-    // En HTML pur, fusionner dynamiquement les lignes = rowspan.
-    function renderYearsExperience(){
-      const parts = [];
-
-      // Ligne "Dans l'ensemble"
-      parts.push(`
-        <tr>
-          <td colspan="2"><b>Dans l’ensemble</b></td>
-          <td><b>${escapeHtml(yearsExperience.overall)}</b></td>
-        </tr>
-      `);
-
-      function groupRows(groupTitle, arr){
-        if(!arr || !arr.length) return "";
-        return arr.map((it, i)=>`
-          <tr>
-            ${i===0 ? `<td rowspan="${arr.length}"><b>${escapeHtml(groupTitle)}</b></td>` : ``}
-            <td>${escapeHtml(it.label)}</td>
-            <td>${escapeHtml(it.years)}</td>
-          </tr>
-        `).join("");
-      }
-
-      parts.push(groupRows("Par métier", yearsExperience.byMetier));
-      parts.push(groupRows("Par filière", yearsExperience.byFiliere));
-      parts.push(groupRows("Par Direction/Service", yearsExperience.byDirection));
-      parts.push(groupRows("Par diplôme", yearsExperience.byDiplome));
-
-      return `
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th colspan="2">Désignation</th>
-                <th>Nombre d’années</th>
-              </tr>
-            </thead>
-            <tbody>${parts.join("")}</tbody>
-          </table>
-        </div>
-        ${orientationBlock(orientations.years)}
-      `;
-    }
-
-    // 5) TESTS COMPLEMENTAIRES (3 colonnes)
-    function renderTests(){
-      const rows = testsComplementaires.map((t, idx)=>{
-        let actionHtml = "";
-        let resultHtml = "";
-
-        if(t.type === "lecture"){
-          actionHtml = `<button class="action-btn" data-action="playAudio" data-index="${idx}">Lire</button>`;
-          if(t.result){
-            resultHtml = `
-              <audio controls style="width:220px; max-width:100%;">
-                <source src="${escapeHtml(t.result)}" type="audio/mpeg" />
-                Votre navigateur ne supporte pas l'audio.
-              </audio>
-            `;
-          } else {
-            resultHtml = "-";
-          }
-        } else {
-          // IA
-          const label = getTestActionLabel(t.doneAt);
-          if(label === "Effectuer le test"){
-            actionHtml = `<button class="action-btn primary" data-action="doExtraTest" data-index="${idx}">${label}</button>`;
-          } else if(label === "Repasser le test"){
-            actionHtml = `<button class="action-btn" data-action="doExtraTest" data-index="${idx}">${label}</button>`;
-          } else {
-            actionHtml = `<span class="pill ok">${label}</span>`;
-          }
-
-          if(t.result === null || t.result === undefined){
-            resultHtml = "-";
-          } else if(typeof t.result === "number"){
-            resultHtml = `${t.result}%`;
-          } else {
-            resultHtml = escapeHtml(t.result);
-          }
-        }
-
-        return `
-          <tr>
-            <td>${escapeHtml(t.designation)}</td>
-            <td>${actionHtml}</td>
-            <td>${resultHtml}</td>
-          </tr>
-        `;
-      }).join("");
-
-      return `
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Désignation</th>
-                <th>Action</th>
-                <th>Résultat</th>
-              </tr>
-            </thead>
-            <tbody>${rows || `<tr><td colspan="3" class="small">Aucun test complémentaire configuré.</td></tr>`}</tbody>
-          </table>
-        </div>
-        ${orientationBlock(orientations.tests)}
-      `;
-    }
-
-    // 6) GALERIE PHOTO/VIDEO
-    function renderGallery(){
-      const items = galerie.map(g=>{
-        if(g.type === "video"){
-          return `
-            <div class="media">
-              <video controls>
-                <source src="${escapeHtml(g.src)}" type="video/mp4">
-              </video>
-              <div class="cap">${escapeHtml(g.caption || "")}</div>
-            </div>
-          `;
-        }
-        return `
-          <div class="media">
-            <img src="${escapeHtml(g.src)}" alt="${escapeHtml(g.caption || "photo")}" />
-            <div class="cap">${escapeHtml(g.caption || "")}</div>
-          </div>
-        `;
-      }).join("");
-
-      return `
-        <div class="gallery">
-          ${items || `<div class="small">Aucun média à afficher.</div>`}
-        </div>
-      `;
-    }
-
-    function renderAllSections(){
-      sectionsRoot.innerHTML = "";
-      sectionsRoot.appendChild(createSection("MES METIERS COMPATIBLES", renderMetiers()));
-      sectionsRoot.appendChild(createSection("FORMATION", renderFormation()));
-      sectionsRoot.appendChild(createSection("EXPERIENCE PROFESSIONNELLE", renderExperience()));
-      sectionsRoot.appendChild(createSection("NOMBRE D’ANNEES D’EXPERIENCES PROFESSIONNELLES", renderYearsExperience()));
-      sectionsRoot.appendChild(createSection("TESTS COMPLEMENTAIRES", renderTests()));
-      sectionsRoot.appendChild(createSection("GALERIE PHOTO/VIDEO", renderGallery()));
-
-      // Ouvrir le 1er par défaut (optionnel)
-      sectionsRoot.querySelector(".section")?.classList.add("open");
-
-      // Événements sur actions dans les tables
-      sectionsRoot.addEventListener("click", (e)=>{
-        const btn = e.target.closest("button[data-action]");
-        if(!btn) return;
-        const action = btn.getAttribute("data-action");
-        const index = Number(btn.getAttribute("data-index"));
-
-        if(action === "doTest"){
-          // Démo: on simule un test + note
-          const score = Math.floor(60 + Math.random()*40); // 60-99
-          const today = new Date();
-          const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-
-          metiersCompatibles[index].test.lastDoneAt = todayStr;
-          metiersCompatibles[index].test.score = score;
-
-          alert(`Test effectué (démo). Score: ${score}%`);
-          renderAllSections();
-        }
-
-        if(action === "doExtraTest"){
-          const today = new Date();
-          const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
-          testsComplementaires[index].doneAt = todayStr;
-
-          // Résultats démo selon type de test
-          if(testsComplementaires[index].designation.toLowerCase().includes("orthographe")){
-            const options = ["Assez bien", "Bien", "Très bien", "Excellent"];
-            testsComplementaires[index].result = options[Math.floor(Math.random()*options.length)];
-          } else if(testsComplementaires[index].designation.toLowerCase().includes("personnalité")){
-            testsComplementaires[index].result = "Organisée, Rigoureuse, Sens de l’analyse";
-          } else {
-            testsComplementaires[index].result = Math.floor(50 + Math.random()*50);
-          }
-
-          alert("Test effectué (démo).");
-          renderAllSections();
-        }
-
-        if(action === "playAudio"){
-          // Ici l'audio est déjà dans la colonne résultat via <audio controls>.
-          // Donc pas besoin. Tu peux supprimer ce bouton si tu veux.
-        }
-      });
-
-      // Enregistrer le choix Oui/Non (profil visible pour offres) (DEMO)
-      sectionsRoot.addEventListener("change", (e)=>{
-        const r = e.target;
-        if(!(r instanceof HTMLInputElement)) return;
-        if(!r.name.startsWith("showOffer_")) return;
-        const idx = Number(r.name.split("_")[1]);
-        metiersCompatibles[idx].showForOffers = r.value;
-      });
-    }
-
-    /***********************
-     * INITIALISATION
-     ***********************/
-    renderTopbar();
-    renderProfileHeader();
+photoInput.addEventListener("change", (e)=>{
+  const file = e.target.files && e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    localStorage.setItem(KEY_PHOTO, reader.result);
     loadPhoto();
-    renderAllSections();
+  };
+  reader.readAsDataURL(file);
+});
 
-    /***********************
-     * IMPORTANT (à brancher plus tard)
-     * - Email notif: nécessite un backend (Firebase, Node, etc.) qui envoie un mail à user.email
-     * - Page notifications/messagerie: à créer séparément (notifications.html, messagerie.html)
-     * - Identité vérifiée: remplacer les conditions "identity" par tes vraies règles
-     ***********************/
-  </script>
-</body>
-</html>
+document.getElementById("removePhoto").addEventListener("click", ()=>{
+  localStorage.removeItem(KEY_PHOTO);
+  loadPhoto();
+});
+
+/***********************
+ * SECTIONS + TABLES
+ ***********************/
+const sectionsRoot = document.getElementById("sections");
+
+function createSection(title, innerHtml){
+  const wrap = document.createElement("section");
+  wrap.className = "section";
+  wrap.innerHTML = `
+    <button class="section-title" type="button">
+      <span>${escapeHtml(title)}</span>
+      <span class="chev">▼</span>
+    </button>
+    <div class="section-body">${innerHtml}</div>
+  `;
+  wrap.querySelector(".section-title").addEventListener("click", ()=>{
+    wrap.classList.toggle("open");
+  });
+  return wrap;
+}
+
+function orientationBlock(text){
+  if(!text || !text.trim()) return "";
+  return `<div class="orientation"><b>Orientation</b><br/>${escapeHtml(text)}</div>`;
+}
+
+function renderMetiers(){
+  const rows = metiersCompatibles.map((m, idx)=>{
+    const actionLabel = getTestActionLabel(m.test.lastDoneAt);
+    const score = (m.test.score === null || m.test.score === undefined) ? "-" : `${m.test.score}%`;
+
+    const actionPill =
+      actionLabel === "Test déjà effectué" ? `<span class="pill ok">${actionLabel}</span>` :
+      actionLabel === "Repasser le test" ? `<span class="pill warn">${actionLabel}</span>` :
+      `<button class="action-btn primary" data-action="doTest" data-index="${idx}">${actionLabel}</button>`;
+
+    return `
+      <tr>
+        <td>${idx+1}</td>
+        <td><b>${escapeHtml(m.metier)}</b></td>
+        <td>
+          ${m.pdfUrl ? `<a class="link-btn" href="${escapeHtml(m.pdfUrl)}" target="_blank">Voir PDF</a>` : "-"}
+          <div class="small">Info complémentaire</div>
+        </td>
+        <td>${actionPill}</td>
+        <td>${score}</td>
+        <td>
+          <div class="switch">
+            <label class="radio">
+              <input type="radio" name="showOffer_${idx}" value="oui" ${m.showForOffers==="oui"?"checked":""}/>
+              Oui
+            </label>
+            <label class="radio">
+              <input type="radio" name="showOffer_${idx}" value="non" ${m.showForOffers==="non"?"checked":""}/>
+              Non
+            </label>
+          </div>
+          <div class="small">Afficher mon profil pour les offres liées</div>
+        </td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Métier</th>
+            <th>Info métier (PDF)</th>
+            <th>Test IA</th>
+            <th>% Test</th>
+            <th>Profil visible pour offres</th>
+          </tr>
+        </thead>
+        <tbody>${rows || `<tr><td colspan="6" class="small">Aucun métier compatible pour le moment.</td></tr>`}</tbody>
+      </table>
+    </div>
+    ${orientationBlock(orientations.metiers)}
+  `;
+}
+
+function renderFormation(){
+  const rows = formations.map(f=>`
+    <tr>
+      <td>${escapeHtml(f.annee)}</td>
+      <td>${escapeHtml(f.diplome)}</td>
+      <td>${escapeHtml(f.filiere)}</td>
+      <td>${f.fichier ? `<a class="link-btn" href="${escapeHtml(f.fichier)}" target="_blank">Voir</a>` : "-"}</td>
+    </tr>
+  `).join("");
+
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Année d’obtention (date)</th>
+            <th>Diplôme (liste)</th>
+            <th>Filière</th>
+            <th>Diplôme numérisé</th>
+          </tr>
+        </thead>
+        <tbody>${rows || `<tr><td colspan="4" class="small">Aucune formation renseignée.</td></tr>`}</tbody>
+      </table>
+    </div>
+    ${orientationBlock(orientations.formation)}
+  `;
+}
+
+function renderExperience(){
+  const rows = experiences.map(e=>`
+    <tr>
+      <td>${escapeHtml(e.debut)} → ${escapeHtml(e.fin)}</td>
+      <td>${escapeHtml(e.statut)}</td>
+      <td>${escapeHtml(e.poste)}</td>
+      <td>${escapeHtml(e.direction)}</td>
+      <td>${escapeHtml(e.secteur)}</td>
+    </tr>
+  `).join("");
+
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Période (début/fin)</th>
+            <th>Statut</th>
+            <th>Poste</th>
+            <th>Direction / Service</th>
+            <th>Secteur d’activité</th>
+          </tr>
+        </thead>
+        <tbody>${rows || `<tr><td colspan="5" class="small">Aucune expérience renseignée.</td></tr>`}</tbody>
+      </table>
+    </div>
+    ${orientationBlock(orientations.experience)}
+  `;
+}
+
+function renderYearsExperience(){
+  const parts = [];
+
+  parts.push(`
+    <tr>
+      <td colspan="2"><b>Dans l’ensemble</b></td>
+      <td><b>${escapeHtml(yearsExperience.overall)}</b></td>
+    </tr>
+  `);
+
+  function groupRows(groupTitle, arr){
+    if(!arr || !arr.length) return "";
+    return arr.map((it, i)=>`
+      <tr>
+        ${i===0 ? `<td rowspan="${arr.length}"><b>${escapeHtml(groupTitle)}</b></td>` : ``}
+        <td>${escapeHtml(it.label)}</td>
+        <td>${escapeHtml(it.years)}</td>
+      </tr>
+    `).join("");
+  }
+
+  parts.push(groupRows("Par métier", yearsExperience.byMetier));
+  parts.push(groupRows("Par filière", yearsExperience.byFiliere));
+  parts.push(groupRows("Par Direction/Service", yearsExperience.byDirection));
+  parts.push(groupRows("Par diplôme", yearsExperience.byDiplome));
+
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="2">Désignation</th>
+            <th>Nombre d’années</th>
+          </tr>
+        </thead>
+        <tbody>${parts.join("")}</tbody>
+      </table>
+    </div>
+    ${orientationBlock(orientations.years)}
+  `;
+}
+
+function renderTests(){
+  const rows = testsComplementaires.map((t, idx)=>{
+    let actionHtml = "";
+    let resultHtml = "";
+
+    if(t.type === "lecture"){
+      actionHtml = `<button class="action-btn" data-action="playAudio" data-index="${idx}">Lire</button>`;
+      if(t.result){
+        resultHtml = `
+          <audio controls style="width:220px; max-width:100%;">
+            <source src="${escapeHtml(t.result)}" type="audio/mpeg" />
+            Votre navigateur ne supporte pas l'audio.
+          </audio>
+        `;
+      } else {
+        resultHtml = "-";
+      }
+    } else {
+      const label = getTestActionLabel(t.doneAt);
+      if(label === "Effectuer le test"){
+        actionHtml = `<button class="action-btn primary" data-action="doExtraTest" data-index="${idx}">${label}</button>`;
+      } else if(label === "Repasser le test"){
+        actionHtml = `<button class="action-btn" data-action="doExtraTest" data-index="${idx}">${label}</button>`;
+      } else {
+        actionHtml = `<span class="pill ok">${label}</span>`;
+      }
+
+      if(t.result === null || t.result === undefined){
+        resultHtml = "-";
+      } else if(typeof t.result === "number"){
+        resultHtml = `${t.result}%`;
+      } else {
+        resultHtml = escapeHtml(t.result);
+      }
+    }
+
+    return `
+      <tr>
+        <td>${escapeHtml(t.designation)}</td>
+        <td>${actionHtml}</td>
+        <td>${resultHtml}</td>
+      </tr>
+    `;
+  }).join("");
+
+  return `
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Désignation</th>
+            <th>Action</th>
+            <th>Résultat</th>
+          </tr>
+        </thead>
+        <tbody>${rows || `<tr><td colspan="3" class="small">Aucun test complémentaire configuré.</td></tr>`}</tbody>
+      </table>
+    </div>
+    ${orientationBlock(orientations.tests)}
+  `;
+}
+
+function renderGallery(){
+  const items = galerie.map(g=>{
+    if(g.type === "video"){
+      return `
+        <div class="media">
+          <video controls>
+            <source src="${escapeHtml(g.src)}" type="video/mp4">
+          </video>
+          <div class="cap">${escapeHtml(g.caption || "")}</div>
+        </div>
+      `;
+    }
+    return `
+      <div class="media">
+        <img src="${escapeHtml(g.src)}" alt="${escapeHtml(g.caption || "photo")}" />
+        <div class="cap">${escapeHtml(g.caption || "")}</div>
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <div class="gallery">
+      ${items || `<div class="small">Aucun média à afficher.</div>`}
+    </div>
+  `;
+}
+
+function renderAllSections(){
+  sectionsRoot.innerHTML = "";
+  sectionsRoot.appendChild(createSection("MES METIERS COMPATIBLES", renderMetiers()));
+  sectionsRoot.appendChild(createSection("FORMATION", renderFormation()));
+  sectionsRoot.appendChild(createSection("EXPERIENCE PROFESSIONNELLE", renderExperience()));
+  sectionsRoot.appendChild(createSection("NOMBRE D’ANNEES D’EXPERIENCES PROFESSIONNELLES", renderYearsExperience()));
+  sectionsRoot.appendChild(createSection("TESTS COMPLEMENTAIRES", renderTests()));
+  sectionsRoot.appendChild(createSection("GALERIE PHOTO/VIDEO", renderGallery()));
+
+  sectionsRoot.querySelector(".section")?.classList.add("open");
+
+  sectionsRoot.addEventListener("click", (e)=>{
+    const btn = e.target.closest("button[data-action]");
+    if(!btn) return;
+    const action = btn.getAttribute("data-action");
+    const index = Number(btn.getAttribute("data-index"));
+
+    if(action === "doTest"){
+      const score = Math.floor(60 + Math.random()*40);
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+      metiersCompatibles[index].test.lastDoneAt = todayStr;
+      metiersCompatibles[index].test.score = score;
+      alert(`Test effectué (démo). Score: ${score}%`);
+      renderAllSections();
+    }
+
+    if(action === "doExtraTest"){
+      const today = new Date();
+      const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+      testsComplementaires[index].doneAt = todayStr;
+
+      if(testsComplementaires[index].designation.toLowerCase().includes("orthographe")){
+        const options = ["Assez bien", "Bien", "Très bien", "Excellent"];
+        testsComplementaires[index].result = options[Math.floor(Math.random()*options.length)];
+      } else if(testsComplementaires[index].designation.toLowerCase().includes("personnalité")){
+        testsComplementaires[index].result = "Organisée, Rigoureuse, Sens de l’analyse";
+      } else {
+        testsComplementaires[index].result = Math.floor(50 + Math.random()*50);
+      }
+
+      alert("Test effectué (démo).");
+      renderAllSections();
+    }
+  });
+
+  sectionsRoot.addEventListener("change", (e)=>{
+    const r = e.target;
+    if(!(r instanceof HTMLInputElement)) return;
+    if(!r.name.startsWith("showOffer_")) return;
+    const idx = Number(r.name.split("_")[1]);
+    metiersCompatibles[idx].showForOffers = r.value;
+  });
+}
+
+/***********************
+ * INITIALISATION
+ ***********************/
+renderTopbar();
+renderProfileHeader();
+loadPhoto();
+renderAllSections();
+</script>
