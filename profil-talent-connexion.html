@@ -22,76 +22,75 @@
 
   /* Menu gauche gris */
   .sidebar{
-  width:220px;
-  padding:0;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  background:#fff;
-}
+    width:220px;
+    padding:0;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:#fff;
+  }
 
-.logo img{
-  max-width:220px;
-  height:auto;
-  display:block;
-}
+  .logo img{
+    max-width:220px;
+    height:auto;
+    display:block;
+  }
 
   .menu{
-      background-color:#fff;
-      flex:1;
-      padding:20px;
+    background-color:#fff;
+    flex:1;
+    padding:20px;
+    border: 1.5px solid #2f5fa7;  /* encadrement bleu léger */
+    border-radius: 10px;          /* coins arrondis */
+  }
 
-   border: 1.5px solid #2f5fa7;  /* encadrement bleu léger */
-  border-radius: 10px;          /* coins arrondis */
-    }
+  .menu a{
+    display:block;
+    margin:35px 0;
+    text-decoration:none;
+    color:black;
+    font-style:italic;
+  }
 
-    .menu a{
-      display:block;
-      margin:35px 0;
-      text-decoration:none;
-      color:black;
-      font-style:italic;
-    }
+  .menu a:hover{color:red}
 
-    .menu a:hover{color:red}
+  .menu a.active{
+    font-size:22px;
+    font-weight:bold;
+    color:red;
+  }
 
-    .menu a.active{
-      font-size:22px;
-      font-weight:bold;
-      color:red;
-    }
+  .dropdown{position:relative;margin:20px 0;}
 
-    .dropdown{position:relative;margin:20px 0;}
+  .dropbtn{
+    display:block;
+    text-decoration:none;
+    color:black;
+    font-style:italic;
+  }
 
-    .dropbtn{
-      display:block;
-      text-decoration:none;
-      color:black;
-      font-style:italic;
-    }
+  .dropbtn:hover{color:red;}
 
-    .dropbtn:hover{color:red;}
+  .dropdown-content{
+    display:none;
+    margin-top:8px;
+    margin-left:12px;
+    border-left:2px solid #eee;
+    padding-left:12px;
+  }
 
-    .dropdown-content{
-      display:none;
-      margin-top:8px;
-      margin-left:12px;
-      border-left:2px solid #eee;
-      padding-left:12px;
-    }
+  .dropdown-content a{
+    display:block;
+    margin:10px 0;
+    text-decoration:none;
+    color:#333;
+    font-style:normal;
+    font-size:14px;
+  }
 
-    .dropdown-content a{
-      display:block;
-      margin:10px 0;
-      text-decoration:none;
-      color:#333;
-      font-style:normal;
-      font-size:14px;
-    }
+  .dropdown-content a:hover{color:red;}
+  .dropdown:hover .dropdown-content{display:block;}
 
-    .dropdown-content a:hover{color:red;}
-
-    .dropdown:hover .dropdown-content{display:block;}
   /* Zone contenu */
   .content{
     flex:1;
@@ -107,7 +106,7 @@
     font-weight:500;
   }
 
-  /* Formulaire centré comme sur ta photo */
+  /* Formulaire centré */
   .form-area{
     max-width:900px;
     margin:0 auto;
@@ -138,7 +137,6 @@
     outline:none;
   }
 
-  /* Ligne "Pas encore inscrit ? Cliquez ici" alignée à droite comme ta maquette */
   .register{
     margin-top:8px;
     text-align:right;
@@ -150,9 +148,29 @@
     text-decoration:underline;
   }
 
-  /* Case "Restez connecté(e)" au centre */
+  /* Zone Connexion + Stay (centrée) */
+  .actions{
+    margin-top:18px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+  }
+
+  .btn-login{
+    width:240px;
+    height:46px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:18px;
+    font-weight:700;
+    color:#fff;
+    background:#2f5fa7;
+  }
+  .btn-login:hover{ filter:brightness(0.95); }
+
   .stay{
-    margin-top:14px;
     display:flex;
     justify-content:center;
     align-items:center;
@@ -162,7 +180,62 @@
     color:#111;
   }
 
-  /* Responsive léger */
+  /* Mot de passe oublié */
+  .forgot{
+    margin-top:10px;
+    text-align:center;
+    font-size:16px;
+  }
+  .forgot a{
+    color:#1565c0;
+    text-decoration:underline;
+  }
+
+  /* Message feedback */
+  .msg{
+    margin-top:14px;
+    text-align:center;
+    font-size:16px;
+    font-weight:700;
+  }
+  .msg.ok{ color:#1b5e20; }
+  .msg.err{ color:#b71c1c; }
+
+  /* Box aide mdp */
+  .reset-box{
+    margin:14px auto 0;
+    max-width:520px;
+    padding:14px 16px;
+    background:#ffffff;
+    border:1.5px solid #2f5fa7;
+    border-radius:10px;
+    display:none;
+  }
+  .reset-box p{
+    margin:0 0 10px;
+    font-size:14px;
+    line-height:1.35;
+  }
+  .reset-box input{
+    width:100%;
+    height:42px;
+    border:2px solid #9e9e9e;
+    padding:10px 12px;
+    outline:none;
+  }
+  .reset-box button{
+    margin-top:10px;
+    width:100%;
+    height:42px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:700;
+    background:#2f5fa7;
+    color:#fff;
+  }
+
+  /* Responsive */
   @media (max-width: 850px){
     .screen{ flex-direction:column; }
     .sidebar{ width:100%; }
@@ -177,68 +250,216 @@
 
     <!-- MENU GAUCHE -->
     <div class="sidebar">
-  <div class="logo">
-    <img src="images/LOGO I-JOM.jpg" alt="Logo I-JOM">
-  </div>
+      <div class="logo">
+        <img src="images/LOGO I-JOM.jpg" alt="Logo I-JOM">
+      </div>
 
-  <div class="menu">
-    <a href="index.html">ACCUEIL</a>
-    <a href="apropos.html">A PROPOS DE NOUS</a>
+      <div class="menu">
+        <a href="index.html">ACCUEIL</a>
+        <a href="apropos.html">A PROPOS DE NOUS</a>
 
-    <!-- PROFIL TALENT (dropdown) -->
-    <div class="dropdown">
-      <!-- Mets class="dropbtn active" sur la page Talent si tu veux le marquer -->
-      <span class="dropbtn active">PROFIL TALENT ▾</span>
-      <div class="dropdown-content">
-        <a href="profil-talent-connexion.html" class="active">Connexion</a>
-        <a href="profil-talent-moncompte.html">Mon Compte</a>
-        <a href="profil-talent-inscription.html">Inscription</a>
+        <!-- PROFIL TALENT (dropdown) -->
+        <div class="dropdown">
+          <span class="dropbtn active">PROFIL TALENT ▾</span>
+          <div class="dropdown-content">
+            <a href="profil-talent-connexion.html" class="active">Connexion</a>
+            <a href="profil-talent-moncompte.html">Mon Compte</a>
+            <a href="profil-talent-inscription.html">Inscription</a>
+          </div>
+        </div>
+
+        <!-- RECRUTEUR (dropdown) -->
+        <div class="dropdown">
+          <span class="dropbtn">RECRUTEUR ▾</span>
+          <div class="dropdown-content">
+            <a href="recruteur-connexion.html">Connexion</a>
+            <a href="recruteur-moncompte.html">Mon Compte</a>
+            <a href="recruteur-inscription.html">Inscription</a>
+          </div>
+        </div>
+
+        <a href="partenaires.html">NOS PARTENAIRES</a>
+        <a href="contact.html">NOUS CONTACTER</a>
       </div>
     </div>
-
-    <!-- RECRUTEUR (dropdown) -->
-    <div class="dropdown">
-      <span class="dropbtn">RECRUTEUR ▾</span>
-      <div class="dropdown-content">
-        <a href="recruteur-connexion.html">Connexion</a>
-        <a href="recruteur-moncompte.html">Mon Compte</a>
-        <a href="recruteur-inscription.html">Inscription</a>
-      </div>
-    </div>
-
-    <a href="partenaires.html">NOS PARTENAIRES</a>
-    <a href="contact.html">NOUS CONTACTER</a>
-  </div>
-</div>
 
     <!-- CONTENU -->
     <main class="content">
       <div class="title">CONNEXION PROFIL TALENT</div>
 
       <div class="form-area">
-        <form action="#" method="post">
+        <form id="loginForm" action="#" method="post" novalidate>
           <div class="row">
             <label for="login">Login</label>
-            <input id="login" name="login" type="text">
+            <input id="login" name="login" type="text" autocomplete="username" required>
           </div>
 
           <div class="row">
             <label for="mdp">Mot de passe</label>
-            <input id="mdp" name="password" type="password">
+            <input id="mdp" name="password" type="password" autocomplete="current-password" required>
           </div>
 
           <div class="register">
             Pas encore inscrit? <a href="profil-talent-inscription.html">Cliquez ici</a>
           </div>
 
-          <div class="stay">
-            <input type="checkbox" id="stayConnected" name="stayConnected">
-            <label for="stayConnected">Restez connecté(e)</label>
+          <!-- ✅ Bouton Connexion juste avant Restez connecté -->
+          <div class="actions">
+            <button type="submit" class="btn-login" id="btnLogin">Connexion</button>
+
+            <div class="stay">
+              <input type="checkbox" id="stayConnected" name="stayConnected">
+              <label for="stayConnected">Restez connecté(e)</label>
+            </div>
+
+            <div class="forgot">
+              <a href="#" id="forgotLink">Mot de passe oublié ?</a>
+            </div>
+
+            <div class="msg" id="msg" aria-live="polite"></div>
+          </div>
+
+          <!-- Petit bloc “mot de passe oublié” -->
+          <div class="reset-box" id="resetBox">
+            <p>Entrez votre email. (Démo) On affichera un message comme si un lien de réinitialisation avait été envoyé.</p>
+            <input type="email" id="resetEmail" placeholder="Votre email">
+            <button type="button" id="resetBtn">Envoyer le lien</button>
+            <div class="msg" id="resetMsg" aria-live="polite"></div>
           </div>
         </form>
       </div>
     </main>
 
   </div>
+
+<script>
+  // =========================
+  //  Connexion (DEMO)
+  // =========================
+  // Identifiants demo (à remplacer par une vraie base plus tard)
+  const DEMO_LOGIN = "talent";
+  const DEMO_PASSWORD = "1234";
+
+  // 3 essais au total = 1 essai + 2 autres chances
+  const MAX_ATTEMPTS = 3;
+  let attempts = Number(sessionStorage.getItem("talentLoginAttempts") || "0");
+
+  const form = document.getElementById("loginForm");
+  const loginInput = document.getElementById("login");
+  const passInput = document.getElementById("mdp");
+  const stayConnected = document.getElementById("stayConnected");
+  const msg = document.getElementById("msg");
+  const btnLogin = document.getElementById("btnLogin");
+
+  const forgotLink = document.getElementById("forgotLink");
+  const resetBox = document.getElementById("resetBox");
+  const resetBtn = document.getElementById("resetBtn");
+  const resetEmail = document.getElementById("resetEmail");
+  const resetMsg = document.getElementById("resetMsg");
+
+  // Auto-remplissage si "restez connecté" (démo)
+  (function preload(){
+    const saved = localStorage.getItem("talentRememberedLogin");
+    if(saved){
+      loginInput.value = saved;
+      stayConnected.checked = true;
+    }
+  })();
+
+  function setMessage(text, type){
+    msg.textContent = text;
+    msg.className = "msg " + (type || "");
+  }
+
+  function lockForm(){
+    loginInput.disabled = true;
+    passInput.disabled = true;
+    stayConnected.disabled = true;
+    btnLogin.disabled = true;
+  }
+
+  function remainingAttempts(){
+    return MAX_ATTEMPTS - attempts;
+  }
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+
+    // Si déjà bloqué
+    if(attempts >= MAX_ATTEMPTS){
+      setMessage("Trop de tentatives. Veuillez réessayer plus tard.", "err");
+      lockForm();
+      return;
+    }
+
+    const login = (loginInput.value || "").trim();
+    const password = passInput.value || "";
+
+    if(!login || !password){
+      setMessage("Veuillez remplir le login et le mot de passe.", "err");
+      return;
+    }
+
+    const ok = (login === DEMO_LOGIN && password === DEMO_PASSWORD);
+
+    if(ok){
+      // "Restez connecté" (démo)
+      if(stayConnected.checked){
+        localStorage.setItem("talentRememberedLogin", login);
+      }else{
+        localStorage.removeItem("talentRememberedLogin");
+      }
+
+      // Reset compteur tentatives
+      attempts = 0;
+      sessionStorage.setItem("talentLoginAttempts", "0");
+
+      setMessage("Connexion réussie. Redirection…", "ok");
+
+      // Redirection compte talent
+      window.location.href = "profil-talent-moncompte.html";
+      return;
+    }
+
+    // Si faux : +1 tentative
+    attempts += 1;
+    sessionStorage.setItem("talentLoginAttempts", String(attempts));
+
+    const restants = remainingAttempts();
+
+    if(restants > 0){
+      setMessage("Identifiants incorrects. Il vous reste " + restants + " tentative(s).", "err");
+      passInput.value = "";
+      passInput.focus();
+    }else{
+      setMessage("Identifiants incorrects. Trop de tentatives. Accès temporairement bloqué.", "err");
+      lockForm();
+    }
+  });
+
+  // Mot de passe oublié (affiche/masque le bloc)
+  forgotLink.addEventListener("click", function(e){
+    e.preventDefault();
+    resetMsg.textContent = "";
+    resetMsg.className = "msg";
+    resetBox.style.display = (resetBox.style.display === "block") ? "none" : "block";
+    if(resetBox.style.display === "block") resetEmail.focus();
+  });
+
+  resetBtn.addEventListener("click", function(){
+    const email = (resetEmail.value || "").trim();
+    if(!email){
+      resetMsg.textContent = "Veuillez entrer votre email.";
+      resetMsg.className = "msg err";
+      return;
+    }
+
+    // Démo : message seulement
+    resetMsg.textContent = "Si cet email existe, un lien de réinitialisation a été envoyé.";
+    resetMsg.className = "msg ok";
+    resetEmail.value = "";
+  });
+</script>
+
 </body>
 </html>
