@@ -829,7 +829,9 @@ if(!user.prenoms && !user.nom){
       window.location.href = "messagerie.html";
     });
 
-    document.getElementById("goEditProfile").addEventListener("click", ()=> window.location.href="profil-talent-modif.html");
+  document.getElementById("goEditProfile").addEventListener("click", ()=>{
+  window.location.href = "profil-talent-inscription.html";
+});
     document.getElementById("goLang").addEventListener("click", ()=> window.location.href="langue.html");
     document.getElementById("goRequest").addEventListener("click", ()=> window.location.href="requete.html");
     document.getElementById("logout").addEventListener("click", ()=>{
