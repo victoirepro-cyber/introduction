@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Profil Talent</title>
+  <style>
+    :root{
+      --red:#e53935;
+      --red2:#c62828;
+      --green:#2e7d32;
+      --blue:#1976d2;
+      --text:#1f1f1f;
+      --muted:#6b7280;
+      --card:#ffffff;
+      --line:#e6e6e6;
+
+      /* Fond dégradé (à ajuster pour coller EXACTEMENT à tes pages précédentes) */
+      --bg1:#ffffff;
+      --bg2:#f3f4f6;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      color:var(--text);
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+    }
+
+    /* Layout global: menu gauche + contenu */
+    .layout{
+      display:flex;
+      min-height:100vh;
+      width:100%;
+    }
+
+    /* Menu gauche (reprend l’idée des pages précédentes) */
+    .menu{
+      width:270px;
+      background:#fff;
+      border-right:2px solid #f0f0f0;
+      padding:20px;
+    }
+    .logo{
+      width:100%;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 12px;
+      border:1px solid #ddd;
+      border-radius:12px;
+      margin-bottom:18px;
+    }
+    .logo-badge{
+      width:38px;height:38px;border-radius:10px;
+      background: linear-gradient(135deg, var(--red), #ff8a80);
+      display:flex;align-items:center;justify-content:center;
+      color:white;font-weight:bold;
+    }
+    .logo-title{font-weight:bold}
+    .logo-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+    .menu a{
+      display:block;
+      margin:14px 0;
+      text-decoration:none;
+      color:#111;
+      font-style:italic;
+      padding:10px 12px;
+      border-radius:10px;
+    }
+    .menu a:hover{color:var(--red)}
+    .menu a.active{
+      font-size:18px;
+      font-weight:bold;
+      color:var(--red);
+      background:#fff5f5;
+      border:1px solid #ffd1d1;
+    }
+
+    /* Contenu */
+    .content{
+      flex:1;
+      padding:22px;
+    }
+
+    /* Barre du haut à droite (icônes) */
+    .topbar{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap:12px;
+      position:relative;
+    }
+    .icon-btn{
+      position:relative;
+      border:1px solid #ddd;
+      background:#fff;
+      border-radius:12px;
+      padding:10px;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+    .icon-btn:hover{border-color:#cfcfcf}
+    .badge{
+      position:absolute;
+      top:-6px;
+      right:-6px;
+      background:var(--red);
+      color:#fff;
+      font-size:11px;
+      padding:2px 6px;
+      border-radius:999px;
+      border:2px solid #fff;
+      min-width:18px;
+      text-align:center;
+    }
+
+    /* Menus déroulants */
+    .dropdown{
+      position:absolute;
+      top:54px;
+      right:0;
+      width:320px;
+      background:#fff;
+      border:1px solid #e5e5e5;
+      border-radius:14px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.10);
+      overflow:hidden;
+      display:none;
+      z-index:999;
+    }
+    .dropdown.open{display:block}
+    .dropdown .head{
+      padding:12px 14px;
+      font-weight:bold;
+      border-bottom:1px solid #f0f0f0;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .dropdown .list{
+      max-height:260px;
+      overflow:auto;
+    }
+    .dropdown .item{
+      padding:12px 14px;
+      border-bottom:1px solid #f6f6f6;
+      font-size:14px;
+      color:#111;
+    }
+    .dropdown .item:last-child{border-bottom:none}
+    .dropdown .actions{
+      padding:12px 14px;
+      border-top:1px solid #f0f0f0;
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      background:#fafafa;
+    }
+    .link-btn{
+      border:none;
+      background:none;
+      color:var(--blue);
+      cursor:pointer;
+      font-weight:bold;
+    }
+    .danger{color:#b91c1c}
+
+    /* Carte profil (haut) */
+    .profile-card{
+      margin-top:18px;
+      background:var(--card);
+      border:1px solid #eaeaea;
+      border-radius:18px;
+      padding:18px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    }
+    .profile-header{
+      display:flex;
+      gap:16px;
+      align-items:flex-start;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .name-block{
+      flex:1;
+      min-width:260px;
+    }
+    .name-line{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .verified{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      background:#ecfdf5;
+      color:#065f46;
+      border:1px solid #a7f3d0;
+      padding:4px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:bold;
+    }
+    .fullname{
+      color:var(--red);
+      font-size:26px;
+      font-weight:900;
+      letter-spacing:0.2px;
+    }
+    .meta{
+      margin-top:6px;
+      color:var(--muted);
+      font-size:14px;
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+    }
+    .job{
+      margin-top:10px;
+      font-size:15px;
+      font-weight:bold;
+    }
+    .job span{font-weight:normal;color:var(--muted)}
+
+    /* Photo identité */
+    .photo-box{
+      width:140px;
+      min-width:140px;
+      height:160px;
+      border:1px dashed #cfcfcf;
+      border-radius:16px;
+      background:#fafafa;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .photo-box img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:none;
+    }
+    .photo-placeholder{
+      text-align:center;
+      padding:10px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .photo-actions{
+      margin-top:8px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .btn{
+      border:1px solid #ddd;
+      background:#fff;
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      font-weight:bold;
+    }
+    .btn:hover{border-color:#cfcfcf}
+    .btn-red{
+      border-color:#ffd1d1;
+      background:#fff5f5;
+      color:var(--red2);
+    }
+
+    /* Accordéons / mentions cliquables */
+    .section{
+      margin-top:14px;
+      background:#fff;
+      border:1px solid #eaeaea;
+      border-radius:18px;
+      overflow:hidden;
+      box-shadow: 0 10px 26px rgba(0,0,0,0.05);
+    }
+    .section-title{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:14px 16px;
+      cursor:pointer;
+      background:linear-gradient(180deg, #fff, #fbfbfb);
+      border:none;
+      font-weight:900;
+      letter-spacing:0.2px;
+      color:#111;
+      text-transform:uppercase;
+    }
+    .chev{
+      transition:transform .2s ease;
+      color:var(--muted);
+      font-weight:bold;
+    }
+    .section.open .chev{transform:rotate(180deg)}
+    .section-body{
+      display:none;
+      padding:14px 16px 18px;
+      border-top:1px solid #f0f0f0;
+      background:#fff;
+    }
+    .section.open .section-body{display:block}
+
+    /* Tables */
+    .table-wrap{overflow:auto}
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:760px;
+      background:#fff;
+    }
+    th, td{
+      border:1px solid var(--line);
+      padding:10px;
+      text-align:left;
+      font-size:14px;
+      vertical-align:top;
+    }
+    th{
+      background:#fafafa;
+      font-weight:900;
+    }
+    .small{font-size:12px;color:var(--muted)}
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid #e5e7eb;
+      background:#f9fafb;
+      font-size:12px;
+      font-weight:bold;
+    }
+    .pill.ok{background:#ecfdf5;border-color:#a7f3d0;color:#065f46}
+    .pill.warn{background:#fff7ed;border-color:#fed7aa;color:#9a3412}
+
+    .action-btn{
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid #ddd;
+      background:#fff;
+      cursor:pointer;
+      font-weight:bold;
+      white-space:nowrap;
+    }
+    .action-btn:hover{border-color:#cfcfcf}
+    .action-btn.primary{
+      border-color:#ffd1d1;
+      background:#fff5f5;
+      color:var(--red2);
+    }
+    .switch{
+      display:flex;
+      gap:8px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .radio{
+      display:inline-flex;
+      gap:6px;
+      align-items:center;
+      font-size:13px;
+    }
+
+    /* Zone orientation (n’apparaît que si texte) */
+    .orientation{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:14px;
+      border:1px solid #dbeafe;
+      background:#eff6ff;
+      color:#1e3a8a;
+    }
+
+    /* Galerie */
+    .gallery{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap:12px;
+    }
+    .media{
+      border:1px solid #eee;
+      border-radius:16px;
+      overflow:hidden;
+      background:#fff;
+      box-shadow:0 8px 18px rgba(0,0,0,0.05);
+    }
+    .media img, .media video{
+      width:100%;
+      height:160px;
+      object-fit:cover;
+      display:block;
+      background:#000;
+    }
+    .media .cap{
+      padding:10px 12px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .menu{display:none;}
+      .content{padding:14px}
+      table{min-width:680px}
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+    <!-- MENU GAUCHE -->
+    <aside class="menu">
+      <div class="logo">
+        <div class="logo-badge">IJ</div>
+        <div>
+          <div class="logo-title">I-JOM</div>
+          <div class="logo-sub">Profil Talent</div>
+        </div>
+      </div>
+
+      <!-- Remplace/ajoute tes liens réels -->
+      <a href="accueil.html">Accueil</a>
+      <a class="active" href="profil-talent.html">Profil Talent</a>
+      <a href="offres.html">Offres</a>
+      <a href="tests.html">Tests</a>
+      <a href="a-propos.html">À propos</a>
+    </aside>
+
+    <!-- CONTENU -->
+    <main class="content">
+      <!-- TOPBAR (icônes en haut à droite) -->
+      <div class="topbar" id="topbar">
+        <!-- Notifications -->
+        <button class="icon-btn" id="btnNotif" title="Notifications">
+          <!-- cloche (SVG) -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 17H9" stroke="#111" stroke-width="2" stroke-linecap="round"/>
+            <path d="M18 8a6 6 0 10-12 0c0 7-3 7-3 7h18s-3 0-3-7Z"
+                  stroke="#111" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+          <span class="badge" id="notifCount">0</span>
+        </button>
+
+        <!-- Messagerie -->
+        <button class="icon-btn" id="btnMsg" title="Messagerie">
+          <!-- message (SVG) -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8Z"
+                  stroke="#111" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M7 8h10M7 12h7" stroke="#111" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span class="badge" id="msgCount">0</span>
+        </button>
+
+        <!-- Paramètres -->
+        <button class="icon-btn" id="btnSettings" title="Paramètres">
+          <!-- engrenage (SVG) -->
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" stroke="#111" stroke-width="2"/>
+            <path d="M19.4 15a7.97 7.97 0 0 0 .1-1 7.97 7.97 0 0 0-.1-1l2-1.5-2-3.5-2.4 1a8.3 8.3 0 0 0-1.7-1L13 2h-2l-.9 3.5a8.3 8.3 0 0 0-1.7 1l-2.4-1-2 3.5 2 1.5a7.97 7.97 0 0 0-.1 1c0 .34.03.67.1 1l-2 1.5 2 3.5 2.4-1c.53.4 1.1.73 1.7 1L11 22h2l.9-3.5c.6-.27 1.17-.6 1.7-1l2.4 1 2-3.5-2-1.5Z"
+                  stroke="#111" stroke-width="2" stroke-linejoin="round"/>
+          </svg>
+        </button>
+
+        <!-- Dropdown NOTIF -->
+        <div class="dropdown" id="dropNotif" aria-hidden="true">
+          <div class="head">
+            <span>Notifications</span>
+            <span class="small" id="dropNotifHint"></span>
+          </div>
+          <div class="list" id="notifList"></div>
+          <div class="actions">
+            <button class="link-btn" id="goNotifPage">Aller à la page</button>
+          </div>
+        </div>
+
+        <!-- Dropdown MSG -->
+        <div class="dropdown" id="dropMsg" aria-hidden="true">
+          <div class="head">
+            <span>Messagerie</span>
+            <span class="small" id="dropMsgHint"></span>
+          </div>
+          <div class="list" id="msgList"></div>
+          <div class="actions">
+            <button class="link-btn" id="goMsgPage">Aller à la page</button>
+          </div>
+        </div>
+
+        <!-- Dropdown SETTINGS -->
+        <div class="dropdown" id="dropSettings" aria-hidden="true" style="width:260px;">
+          <div class="head"><span>Paramètres</span></div>
+          <div class="list">
+            <div class="item"><button class="link-btn" id="goEditProfile">Modifications du profil</button></div>
+            <div class="item"><button class="link-btn" id="goLang">Langue</button></div>
+            <div class="item"><button class="link-btn" id="goRequest">Requête</button></div>
+            <div class="item"><button class="link-btn danger" id="logout">Déconnexion</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFIL HEADER -->
+      <section class="profile-card">
+        <div class="profile-header">
+          <div class="name-block">
+            <div class="name-line">
+              <span class="verified" id="verifiedBadge" style="display:none;">
+                <!-- check -->
+                <span style="display:inline-flex; width:16px; height:16px; border-radius:999px; background:#10b981; color:#fff; align-items:center; justify-content:center; font-size:12px;">✓</span>
+                Identité vérifiée
+              </span>
+              <div class="fullname" id="fullName">Prénoms Nom</div>
+            </div>
+
+            <div class="meta" id="locationLine">
+              <div>🌍 <b id="continent">Afrique</b></div>
+              <div>🇨🇮 <b id="country">Côte d’Ivoire</b></div>
+              <div>📍 <b id="city">Abidjan</b></div>
+            </div>
+
+            <div class="job">
+              Emploi : <span id="jobTitle">Poste actuel</span>
+            </div>
+
+            <div class="photo-actions">
+              <label class="btn btn-red" for="photoInput">Ajouter / modifier photo d’identité</label>
+              <input id="photoInput" type="file" accept="image/*" style="display:none;" />
+              <button class="btn" id="removePhoto">Retirer</button>
+            </div>
+            <div class="small" style="margin-top:8px;">
+              NB: la photo peut être ajoutée à l’inscription ou plus tard via “Modifications du profil”.
+            </div>
+          </div>
+
+          <div>
+            <div class="photo-box" title="Photo d'identité">
+              <img id="photoImg" alt="Photo d'identité" />
+              <div class="photo-placeholder" id="photoPlaceholder">
+                <b>Photo d’identité</b><br/>
+                (à ajouter)
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTIONS (mentions cliquables / accordéon) -->
+      <div id="sections"></div>
+    </main>
+  </div>
+
+  <script>
+    /***********************
+     * DONNÉES (DEMO)
+     * Remplace par tes vraies données (API / base de données) plus tard.
+     ***********************/
+    const user = {
+      prenoms: "Victoire",
+      nom: "Kouakou",
+      email: "utilisateur@email.com",
+      continent: "Afrique",
+      pays: "Côte d’Ivoire",
+      ville: "Abidjan",
+      emploi: "Assistante travaux / Suivi de chantier",
+      // Conditions d'identité vérifiée (exemple)
+      identity: {
+        hasIdDocument: true,
+        hasSelfie: true,
+        hasPhoneVerified: true
+      }
+    };
+
+    // Notifications (DEMO)
+    const notifications = [
+      { id: 1, text: "Votre profil a été mis à jour.", date: "2026-02-10", isNew: false },
+      { id: 2, text: "Nouvelle offre liée à votre métier compatible.", date: "2026-02-17", isNew: true },
+      { id: 3, text: "Un recruteur a consulté votre profil.", date: "2026-02-18", isNew: true }
+    ];
+
+    // Messages (DEMO)
+    const messages = [
+      { id: 1, from: "Recruteur - Entreprise X", text: "Bonjour, êtes-vous disponible pour un échange ?", date: "2026-02-18", isNew: true },
+      { id: 2, from: "Support I-JOM", text: "Votre demande a été reçue.", date: "2026-02-16", isNew: false }
+    ];
+
+    // Métiers compatibles (DEMO)
+    const metiersCompatibles = [
+      {
+        metier: "Conducteur de travaux",
+        pdfUrl: "docs/metier_conducteur_travaux.pdf",
+        test: {
+          lastDoneAt: "2025-10-01", // null si jamais fait
+          score: 78 // null si pas fait
+        },
+        showForOffers: "oui" // "oui" | "non"
+      },
+      {
+        metier: "Assistant(e) chef de chantier",
+        pdfUrl: "docs/metier_chef_chantier.pdf",
+        test: {
+          lastDoneAt: null,
+          score: null
+        },
+        showForOffers: "non"
+      }
+    ];
+
+    // Formation (DEMO)
+    const formations = [
+      { annee: "2020-07-15", diplome: "Licence", filiere: "Génie civil", fichier: "docs/diplome_licence.pdf" },
+      { annee: "2017-06-20", diplome: "BTS", filiere: "Bâtiment", fichier: "docs/diplome_bts.pdf" }
+    ];
+
+    // Expériences (DEMO)
+    const experiences = [
+      { debut: "2023-01-01", fin: "2024-12-31", statut: "CDD", poste: "Assistante du Directeur de travaux", direction: "Direction Travaux", secteur: "BTP" },
+      { debut: "2021-03-01", fin: "2022-10-31", statut: "Stage", poste: "Assistante chantier", direction: "Service Chantier", secteur: "BTP" }
+    ];
+
+    // Années d'expérience (DEMO)
+    const yearsExperience = {
+      overall: 4,
+      byMetier: [
+        { label: "Assistante du Directeur de travaux", years: 2 },
+        { label: "Assistante chantier", years: 2 }
+      ],
+      byFiliere: [
+        { label: "Génie civil", years: 4 }
+      ],
+      byDirection: [
+        { label: "Direction Travaux", years: 2 },
+        { label: "Service Chantier", years: 2 }
+      ],
+      byDiplome: [
+        { label: "Licence", years: 2 },
+        { label: "BTS", years: 2 }
+      ]
+    };
+
+    // Tests complémentaires (DEMO)
+    const testsComplementaires = [
+      { designation: "Lecture langue maternelle", type: "lecture", langue: "Français", doneAt: "2026-02-01", result: "audio/fr_lecture.mp3" },
+      { designation: "Test d’orthographe langue maternelle", type: "ia", doneAt: "2025-12-10", result: "Bien" },
+      { designation: "Test de personnalité professionnelle", type: "ia", doneAt: null, result: null },
+      { designation: "Test de logique", type: "ia", doneAt: "2025-11-20", result: 64 },
+      { designation: "Test d’aptitude verbale", type: "ia", doneAt: null, result: null }
+    ];
+
+    // Galerie (DEMO)
+    const galerie = [
+      { type:"image", src:"images/photo1.jpg", caption:"Photo 1" },
+      { type:"image", src:"images/photo2.jpg", caption:"Photo 2" },
+      { type:"video", src:"videos/video1.mp4", caption:"Vidéo 1" }
+    ];
+
+    // Orientations (si vide => ne s'affiche pas)
+    const orientations = {
+      metiers: "Orientation: Nous vous recommandons de repasser le test du métier dont le score est inférieur à 70%.",
+      formation: "", // vide => caché
+      experience: "",
+      years: "",
+      tests: "Orientation: Complétez le test de personnalité pour affiner vos métiers compatibles."
+    };
+
+    /***********************
+     * LOGIQUE UTILITAIRE
+     ***********************/
+    function isIdentityVerified(identity){
+      // Conditions EXEMPLE. Tu ajusteras plus tard.
+      return !!(identity.hasIdDocument && identity.hasSelfie && identity.hasPhoneVerified);
+    }
+
+    function monthsBetween(dateStrA, dateStrB){
+      // dateStrA/B format YYYY-MM-DD
+      const a = new Date(dateStrA + "T00:00:00");
+      const b = new Date(dateStrB + "T00:00:00");
+      let months = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+      // si le jour du mois n'est pas atteint, on retire 1 mois
+      if (b.getDate() < a.getDate()) months -= 1;
+      return months;
+    }
+
+    function getTestActionLabel(doneAt){
+      if(!doneAt) return "Effectuer le test";
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth()+1).padStart(2,'0');
+      const dd = String(today.getDate()).padStart(2,'0');
+      const todayStr = `${yyyy}-${mm}-${dd}`;
+
+      const m = monthsBetween(doneAt, todayStr);
+      if(m >= 3) return "Repasser le test";
+      return "Test déjà effectué";
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    /***********************
+     * TOPBAR: dropdowns + compteurs
+     * (Lien email: en frontend pur on ne peut pas “envoyer un mail” automatiquement.
+     *  On prépare le branchement: backend/notification service plus tard.)
+     ***********************/
+    const btnNotif = document.getElementById("btnNotif");
+    const btnMsg = document.getElementById("btnMsg");
+    const btnSettings = document.getElementById("btnSettings");
+    const dropNotif = document.getElementById("dropNotif");
+    const dropMsg = document.getElementById("dropMsg");
+    const dropSettings = document.getElementById("dropSettings");
+
+    function closeAllDrops(){
+      dropNotif.classList.remove("open");
+      dropMsg.classList.remove("open");
+      dropSettings.classList.remove("open");
+    }
+    function toggleDrop(drop){
+      const isOpen = drop.classList.contains("open");
+      closeAllDrops();
+      if(!isOpen) drop.classList.add("open");
+    }
+
+    btnNotif.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropNotif); });
+    btnMsg.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropMsg); });
+    btnSettings.addEventListener("click", (e)=>{ e.stopPropagation(); toggleDrop(dropSettings); });
+
+    document.addEventListener("click", ()=> closeAllDrops());
+
+    // Remplir listes + compteurs
+    function renderTopbar(){
+      const notifNew = notifications.filter(n=>n.isNew).length;
+      const msgNew = messages.filter(m=>m.isNew).length;
+
+      document.getElementById("notifCount").textContent = notifNew;
+      document.getElementById("msgCount").textContent = msgNew;
+
+      document.getElementById("dropNotifHint").textContent = notifNew ? `${notifNew} nouvelle(s)` : "Aucune nouvelle";
+      document.getElementById("dropMsgHint").textContent = msgNew ? `${msgNew} nouveau(x)` : "Aucun nouveau";
+
+      const notifList = document.getElementById("notifList");
+      notifList.innerHTML = notifications.length
+        ? notifications.map(n=>`
+          <div class="item">
+            <div style="display:flex; justify-content:space-between; gap:10px;">
+              <div>${n.isNew ? "🆕 " : ""}${escapeHtml(n.text)}</div>
+              <div class="small">${escapeHtml(n.date)}</div>
+            </div>
+          </div>
+        `).join("")
+        : `<div class="item small">Aucune notification.</div>`;
+
+      const msgList = document.getElementById("msgList");
+      msgList.innerHTML = messages.length
+        ? messages.map(m=>`
+          <div class="item">
+            <div><b>${escapeHtml(m.from)}</b> ${m.isNew ? "🆕" : ""}</div>
+            <div class="small" style="margin-top:4px;">${escapeHtml(m.text)}</div>
+            <div class="small" style="margin-top:6px;">${escapeHtml(m.date)}</div>
+          </div>
+        `).join("")
+        : `<div class="item small">Aucun message.</div>`;
+
+      // Lien “email”
+      // En vrai: quand une notif arrive, ton serveur envoie un email à user.email.
+      // Ici: démo => mailto (manuel).
+      // Tu peux supprimer si tu ne veux pas du tout de mailto.
+      if(notifNew > 0){
+        // Exemple: préparer un mail (manuel) à l'utilisateur
+        // (remplace subject/body si tu veux)
+        // window.location.href = `mailto:${user.email}?subject=Nouvelle notification I-JOM&body=Vous avez ${notifNew} nouvelle(s) notification(s).`;
+      }
+    }
+
+    document.getElementById("goNotifPage").addEventListener("click", ()=>{
+      // Page des notifications
+      window.location.href = "notifications.html";
+    });
+    document.getElementById("goMsgPage").addEventListener("click", ()=>{
+      // Page de messagerie
+      window.location.href = "messagerie.html";
+    });
+
+    document.getElementById("goEditProfile").addEventListener("click", ()=> window.location.href="profil-talent-modif.html");
+    document.getElementById("goLang").addEventListener("click", ()=> window.location.href="langue.html");
+    document.getElementById("goRequest").addEventListener("click", ()=> window.location.href="requete.html");
+    document.getElementById("logout").addEventListener("click", ()=>{
+      // Déconnexion (démo)
+      localStorage.removeItem("ijom_session");
+      window.location.href = "connexion-talent.html";
+    });
+
+    /***********************
+     * PROFIL: Nom, badge, localisation, emploi, photo
+     ***********************/
+    function renderProfileHeader(){
+      document.getElementById("fullName").textContent = `${user.prenoms} ${user.nom}`;
+      document.getElementById("continent").textContent = user.continent;
+      document.getElementById("country").textContent = user.pays;
+      document.getElementById("city").textContent = user.ville;
+      document.getElementById("jobTitle").textContent = user.emploi;
+
+      const verified = isIdentityVerified(user.identity);
+      document.getElementById("verifiedBadge").style.display = verified ? "inline-flex" : "none";
+    }
+
+    // Photo: stockée en localStorage (DEMO)
+    const photoImg = document.getElementById("photoImg");
+    const photoPlaceholder = document.getElementById("photoPlaceholder");
+    const photoInput = document.getElementById("photoInput");
+
+    function loadPhoto(){
+      const saved = localStorage.getItem("ijom_photo_id");
+      if(saved){
+        photoImg.src = saved;
+        photoImg.style.display = "block";
+        photoPlaceholder.style.display = "none";
+      } else {
+        photoImg.style.display = "none";
+        photoPlaceholder.style.display = "block";
+      }
+    }
+
+    photoInput.addEventListener("change", (e)=>{
+      const file = e.target.files && e.target.files[0];
+      if(!file) return;
+      const reader = new FileReader();
+      reader.onload = ()=>{
+        localStorage.setItem("ijom_photo_id", reader.result);
+        loadPhoto();
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById("removePhoto").addEventListener("click", ()=>{
+      localStorage.removeItem("ijom_photo_id");
+      loadPhoto();
+    });
+
+    /***********************
+     * SECTIONS + TABLES
+     * Mentions cliquables pour afficher/masquer.
+     ***********************/
+    const sectionsRoot = document.getElementById("sections");
+
+    function createSection(title, innerHtml){
+      const wrap = document.createElement("section");
+      wrap.className = "section";
+      wrap.innerHTML = `
+        <button class="section-title" type="button">
+          <span>${escapeHtml(title)}</span>
+          <span class="chev">▼</span>
+        </button>
+        <div class="section-body">${innerHtml}</div>
+      `;
+      wrap.querySelector(".section-title").addEventListener("click", ()=>{
+        wrap.classList.toggle("open");
+      });
+      return wrap;
+    }
+
+    function orientationBlock(text){
+      if(!text || !text.trim()) return "";
+      return `<div class="orientation"><b>Orientation</b><br/>${escapeHtml(text)}</div>`;
+    }
+
+    // 1) MES METIERS COMPATIBLES (6 colonnes)
+    function renderMetiers(){
+      const rows = metiersCompatibles.map((m, idx)=>{
+        const actionLabel = getTestActionLabel(m.test.lastDoneAt);
+        const score = (m.test.score === null || m.test.score === undefined) ? "-" : `${m.test.score}%`;
+
+        const actionPill =
+          actionLabel === "Test déjà effectué" ? `<span class="pill ok">${actionLabel}</span>` :
+          actionLabel === "Repasser le test" ? `<span class="pill warn">${actionLabel}</span>` :
+          `<button class="action-btn primary" data-action="doTest" data-index="${idx}">${actionLabel}</button>`;
+
+        return `
+          <tr>
+            <td>${idx+1}</td>
+            <td><b>${escapeHtml(m.metier)}</b></td>
+            <td>
+              ${m.pdfUrl ? `<a class="link-btn" href="${escapeHtml(m.pdfUrl)}" target="_blank">Voir PDF</a>` : "-"}
+              <div class="small">Info complémentaire</div>
+            </td>
+            <td>${actionPill}</td>
+            <td>${score}</td>
+            <td>
+              <div class="switch">
+                <label class="radio">
+                  <input type="radio" name="showOffer_${idx}" value="oui" ${m.showForOffers==="oui"?"checked":""}/>
+                  Oui
+                </label>
+                <label class="radio">
+                  <input type="radio" name="showOffer_${idx}" value="non" ${m.showForOffers==="non"?"checked":""}/>
+                  Non
+                </label>
+              </div>
+              <div class="small">Afficher mon profil pour les offres liées</div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      const html = `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>N°</th>
+                <th>Métier</th>
+                <th>Info métier (PDF)</th>
+                <th>Test IA</th>
+                <th>% Test</th>
+                <th>Profil visible pour offres</th>
+              </tr>
+            </thead>
+            <tbody>${rows || `<tr><td colspan="6" class="small">Aucun métier compatible pour le moment.</td></tr>`}</tbody>
+          </table>
+        </div>
+        ${orientationBlock(orientations.metiers)}
+      `;
+      return html;
+    }
+
+    // 2) FORMATION (4 colonnes)
+    function renderFormation(){
+      const rows = formations.map(f=>`
+        <tr>
+          <td>${escapeHtml(f.annee)}</td>
+          <td>${escapeHtml(f.diplome)}</td>
+          <td>${escapeHtml(f.filiere)}</td>
+          <td>${f.fichier ? `<a class="link-btn" href="${escapeHtml(f.fichier)}" target="_blank">Voir</a>` : "-"}</td>
+        </tr>
+      `).join("");
+
+      return `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Année d’obtention (date)</th>
+                <th>Diplôme (liste)</th>
+                <th>Filière</th>
+                <th>Diplôme numérisé</th>
+              </tr>
+            </thead>
+            <tbody>${rows || `<tr><td colspan="4" class="small">Aucune formation renseignée.</td></tr>`}</tbody>
+          </table>
+        </div>
+        ${orientationBlock(orientations.formation)}
+      `;
+    }
+
+    // 3) EXPERIENCE PROFESSIONNELLE (5 colonnes)
+    function renderExperience(){
+      const rows = experiences.map(e=>`
+        <tr>
+          <td>${escapeHtml(e.debut)} → ${escapeHtml(e.fin)}</td>
+          <td>${escapeHtml(e.statut)}</td>
+          <td>${escapeHtml(e.poste)}</td>
+          <td>${escapeHtml(e.direction)}</td>
+          <td>${escapeHtml(e.secteur)}</td>
+        </tr>
+      `).join("");
+
+      return `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Période (début/fin)</th>
+                <th>Statut</th>
+                <th>Poste</th>
+                <th>Direction / Service</th>
+                <th>Secteur d’activité</th>
+              </tr>
+            </thead>
+            <tbody>${rows || `<tr><td colspan="5" class="small">Aucune expérience renseignée.</td></tr>`}</tbody>
+          </table>
+        </div>
+        ${orientationBlock(orientations.experience)}
+      `;
+    }
+
+    // 4) NOMBRE D’ANNEES D’EXPERIENCES PROFESSIONNELLES (3 colonnes, fusion logique)
+    // En HTML pur, fusionner dynamiquement les lignes = rowspan.
+    function renderYearsExperience(){
+      const parts = [];
+
+      // Ligne "Dans l'ensemble"
+      parts.push(`
+        <tr>
+          <td colspan="2"><b>Dans l’ensemble</b></td>
+          <td><b>${escapeHtml(yearsExperience.overall)}</b></td>
+        </tr>
+      `);
+
+      function groupRows(groupTitle, arr){
+        if(!arr || !arr.length) return "";
+        return arr.map((it, i)=>`
+          <tr>
+            ${i===0 ? `<td rowspan="${arr.length}"><b>${escapeHtml(groupTitle)}</b></td>` : ``}
+            <td>${escapeHtml(it.label)}</td>
+            <td>${escapeHtml(it.years)}</td>
+          </tr>
+        `).join("");
+      }
+
+      parts.push(groupRows("Par métier", yearsExperience.byMetier));
+      parts.push(groupRows("Par filière", yearsExperience.byFiliere));
+      parts.push(groupRows("Par Direction/Service", yearsExperience.byDirection));
+      parts.push(groupRows("Par diplôme", yearsExperience.byDiplome));
+
+      return `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th colspan="2">Désignation</th>
+                <th>Nombre d’années</th>
+              </tr>
+            </thead>
+            <tbody>${parts.join("")}</tbody>
+          </table>
+        </div>
+        ${orientationBlock(orientations.years)}
+      `;
+    }
+
+    // 5) TESTS COMPLEMENTAIRES (3 colonnes)
+    function renderTests(){
+      const rows = testsComplementaires.map((t, idx)=>{
+        let actionHtml = "";
+        let resultHtml = "";
+
+        if(t.type === "lecture"){
+          actionHtml = `<button class="action-btn" data-action="playAudio" data-index="${idx}">Lire</button>`;
+          if(t.result){
+            resultHtml = `
+              <audio controls style="width:220px; max-width:100%;">
+                <source src="${escapeHtml(t.result)}" type="audio/mpeg" />
+                Votre navigateur ne supporte pas l'audio.
+              </audio>
+            `;
+          } else {
+            resultHtml = "-";
+          }
+        } else {
+          // IA
+          const label = getTestActionLabel(t.doneAt);
+          if(label === "Effectuer le test"){
+            actionHtml = `<button class="action-btn primary" data-action="doExtraTest" data-index="${idx}">${label}</button>`;
+          } else if(label === "Repasser le test"){
+            actionHtml = `<button class="action-btn" data-action="doExtraTest" data-index="${idx}">${label}</button>`;
+          } else {
+            actionHtml = `<span class="pill ok">${label}</span>`;
+          }
+
+          if(t.result === null || t.result === undefined){
+            resultHtml = "-";
+          } else if(typeof t.result === "number"){
+            resultHtml = `${t.result}%`;
+          } else {
+            resultHtml = escapeHtml(t.result);
+          }
+        }
+
+        return `
+          <tr>
+            <td>${escapeHtml(t.designation)}</td>
+            <td>${actionHtml}</td>
+            <td>${resultHtml}</td>
+          </tr>
+        `;
+      }).join("");
+
+      return `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Désignation</th>
+                <th>Action</th>
+                <th>Résultat</th>
+              </tr>
+            </thead>
+            <tbody>${rows || `<tr><td colspan="3" class="small">Aucun test complémentaire configuré.</td></tr>`}</tbody>
+          </table>
+        </div>
+        ${orientationBlock(orientations.tests)}
+      `;
+    }
+
+    // 6) GALERIE PHOTO/VIDEO
+    function renderGallery(){
+      const items = galerie.map(g=>{
+        if(g.type === "video"){
+          return `
+            <div class="media">
+              <video controls>
+                <source src="${escapeHtml(g.src)}" type="video/mp4">
+              </video>
+              <div class="cap">${escapeHtml(g.caption || "")}</div>
+            </div>
+          `;
+        }
+        return `
+          <div class="media">
+            <img src="${escapeHtml(g.src)}" alt="${escapeHtml(g.caption || "photo")}" />
+            <div class="cap">${escapeHtml(g.caption || "")}</div>
+          </div>
+        `;
+      }).join("");
+
+      return `
+        <div class="gallery">
+          ${items || `<div class="small">Aucun média à afficher.</div>`}
+        </div>
+      `;
+    }
+
+    function renderAllSections(){
+      sectionsRoot.innerHTML = "";
+      sectionsRoot.appendChild(createSection("MES METIERS COMPATIBLES", renderMetiers()));
+      sectionsRoot.appendChild(createSection("FORMATION", renderFormation()));
+      sectionsRoot.appendChild(createSection("EXPERIENCE PROFESSIONNELLE", renderExperience()));
+      sectionsRoot.appendChild(createSection("NOMBRE D’ANNEES D’EXPERIENCES PROFESSIONNELLES", renderYearsExperience()));
+      sectionsRoot.appendChild(createSection("TESTS COMPLEMENTAIRES", renderTests()));
+      sectionsRoot.appendChild(createSection("GALERIE PHOTO/VIDEO", renderGallery()));
+
+      // Ouvrir le 1er par défaut (optionnel)
+      sectionsRoot.querySelector(".section")?.classList.add("open");
+
+      // Événements sur actions dans les tables
+      sectionsRoot.addEventListener("click", (e)=>{
+        const btn = e.target.closest("button[data-action]");
+        if(!btn) return;
+        const action = btn.getAttribute("data-action");
+        const index = Number(btn.getAttribute("data-index"));
+
+        if(action === "doTest"){
+          // Démo: on simule un test + note
+          const score = Math.floor(60 + Math.random()*40); // 60-99
+          const today = new Date();
+          const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+          metiersCompatibles[index].test.lastDoneAt = todayStr;
+          metiersCompatibles[index].test.score = score;
+
+          alert(`Test effectué (démo). Score: ${score}%`);
+          renderAllSections();
+        }
+
+        if(action === "doExtraTest"){
+          const today = new Date();
+          const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+          testsComplementaires[index].doneAt = todayStr;
+
+          // Résultats démo selon type de test
+          if(testsComplementaires[index].designation.toLowerCase().includes("orthographe")){
+            const options = ["Assez bien", "Bien", "Très bien", "Excellent"];
+            testsComplementaires[index].result = options[Math.floor(Math.random()*options.length)];
+          } else if(testsComplementaires[index].designation.toLowerCase().includes("personnalité")){
+            testsComplementaires[index].result = "Organisée, Rigoureuse, Sens de l’analyse";
+          } else {
+            testsComplementaires[index].result = Math.floor(50 + Math.random()*50);
+          }
+
+          alert("Test effectué (démo).");
+          renderAllSections();
+        }
+
+        if(action === "playAudio"){
+          // Ici l'audio est déjà dans la colonne résultat via <audio controls>.
+          // Donc pas besoin. Tu peux supprimer ce bouton si tu veux.
+        }
+      });
+
+      // Enregistrer le choix Oui/Non (profil visible pour offres) (DEMO)
+      sectionsRoot.addEventListener("change", (e)=>{
+        const r = e.target;
+        if(!(r instanceof HTMLInputElement)) return;
+        if(!r.name.startsWith("showOffer_")) return;
+        const idx = Number(r.name.split("_")[1]);
+        metiersCompatibles[idx].showForOffers = r.value;
+      });
+    }
+
+    /***********************
+     * INITIALISATION
+     ***********************/
+    renderTopbar();
+    renderProfileHeader();
+    loadPhoto();
+    renderAllSections();
+
+    /***********************
+     * IMPORTANT (à brancher plus tard)
+     * - Email notif: nécessite un backend (Firebase, Node, etc.) qui envoie un mail à user.email
+     * - Page notifications/messagerie: à créer séparément (notifications.html, messagerie.html)
+     * - Identité vérifiée: remplacer les conditions "identity" par tes vraies règles
+     ***********************/
+  </script>
+</body>
+</html>
