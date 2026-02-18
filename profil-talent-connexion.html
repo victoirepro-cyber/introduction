@@ -334,15 +334,18 @@
 
 <script>
   // =========================
-  //  Connexion (DEMO)
+  //  Connexion Profil Talent (LOCAL)
+  //  - lit talentAccount (créé à l'inscription)
+  //  - crée talentSession (pour accéder au compte)
+  //  - 3 tentatives max
   // =========================
-  // Identifiants demo (à remplacer par une vraie base plus tard)
-  const DEMO_LOGIN = "talent";
-  const DEMO_PASSWORD = "1234";
 
-  // 3 essais au total = 1 essai + 2 autres chances
+  const KEY_ACCOUNT = "talentAccount";
+  const KEY_SESSION = "talentSession";
+  const KEY_ATTEMPTS = "talentLoginAttempts";
+  const KEY_REMEMBER = "talentRememberedLogin";
+
   const MAX_ATTEMPTS = 3;
-  let attempts = Number(sessionStorage.getItem("talentLoginAttempts") || "0");
 
   const form = document.getElementById("loginForm");
   const loginInput = document.getElementById("login");
@@ -357,14 +360,11 @@
   const resetEmail = document.getElementById("resetEmail");
   const resetMsg = document.getElementById("resetMsg");
 
-  // Auto-remplissage si "restez connecté" (démo)
-  (function preload(){
-    const saved = localStorage.getItem("talentRememberedLogin");
-    if(saved){
-      loginInput.value = saved;
-      stayConnected.checked = true;
-    }
-  })();
+  function readJSON(key){
+    const raw = localStorage.getItem(key);
+    if(!raw) return null;
+    try { return JSON.parse(raw); } catch(e){ return null; }
+  }
 
   function setMessage(text, type){
     msg.textContent = text;
@@ -378,14 +378,33 @@
     btnLogin.disabled = true;
   }
 
-  function remainingAttempts(){
+  function remainingAttempts(attempts){
     return MAX_ATTEMPTS - attempts;
   }
+
+  // Auto-remplissage si "restez connecté"
+  (function preload(){
+    const saved = localStorage.getItem(KEY_REMEMBER);
+    if(saved){
+      loginInput.value = saved;
+      stayConnected.checked = true;
+    }
+  })();
+
+  // Si une session existe déjà, aller au compte
+  (function autoRedirectIfConnected(){
+    const session = readJSON(KEY_SESSION);
+    if(session && session.connected === true){
+      window.location.href = "profil-talent-compte.html";
+    }
+  })();
+
+  // Compteur tentatives (sessionStorage pour reset au refresh navigateur)
+  let attempts = Number(sessionStorage.getItem(KEY_ATTEMPTS) || "0");
 
   form.addEventListener("submit", function(e){
     e.preventDefault();
 
-    // Si déjà bloqué
     if(attempts >= MAX_ATTEMPTS){
       setMessage("Trop de tentatives. Veuillez réessayer plus tard.", "err");
       lockForm();
@@ -400,32 +419,44 @@
       return;
     }
 
-    const ok = (login === DEMO_LOGIN && password === DEMO_PASSWORD);
+    const account = readJSON(KEY_ACCOUNT);
 
-    if(ok){
-      // "Restez connecté" (démo)
-      if(stayConnected.checked){
-        localStorage.setItem("talentRememberedLogin", login);
-      }else{
-        localStorage.removeItem("talentRememberedLogin");
-      }
-
-      // Reset compteur tentatives
-      attempts = 0;
-      sessionStorage.setItem("talentLoginAttempts", "0");
-
-      setMessage("Connexion réussie. Redirection…", "ok");
-
-      // Redirection compte talent
-      window.location.href = "profil-talent-moncompte.html";
+    if(!account || !account.login || !account.password){
+      setMessage("Aucun compte trouvé. Veuillez vous inscrire d'abord.", "err");
       return;
     }
 
-    // Si faux : +1 tentative
-    attempts += 1;
-    sessionStorage.setItem("talentLoginAttempts", String(attempts));
+    const ok = (login === account.login && password === account.password);
 
-    const restants = remainingAttempts();
+    if(ok){
+      // Restez connecté: mémoriser uniquement le login
+      if(stayConnected.checked){
+        localStorage.setItem(KEY_REMEMBER, login);
+      }else{
+        localStorage.removeItem(KEY_REMEMBER);
+      }
+
+      // Créer session
+      localStorage.setItem(KEY_SESSION, JSON.stringify({
+        login: account.login,
+        connected: true,
+        connectedAt: new Date().toISOString()
+      }));
+
+      // reset tentatives
+      attempts = 0;
+      sessionStorage.setItem(KEY_ATTEMPTS, "0");
+
+      setMessage("Connexion réussie. Redirection…", "ok");
+      window.location.href = "profil-talent-compte.html";
+      return;
+    }
+
+    // Faux identifiants
+    attempts += 1;
+    sessionStorage.setItem(KEY_ATTEMPTS, String(attempts));
+
+    const restants = remainingAttempts(attempts);
 
     if(restants > 0){
       setMessage("Identifiants incorrects. Il vous reste " + restants + " tentative(s).", "err");
@@ -437,7 +468,7 @@
     }
   });
 
-  // Mot de passe oublié (affiche/masque le bloc)
+  // Mot de passe oublié (démo)
   forgotLink.addEventListener("click", function(e){
     e.preventDefault();
     resetMsg.textContent = "";
@@ -453,13 +484,8 @@
       resetMsg.className = "msg err";
       return;
     }
-
-    // Démo : message seulement
     resetMsg.textContent = "Si cet email existe, un lien de réinitialisation a été envoyé.";
     resetMsg.className = "msg ok";
     resetEmail.value = "";
   });
 </script>
-
-</body>
-</html>
