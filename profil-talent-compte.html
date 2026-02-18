@@ -566,24 +566,52 @@
   </div>
 
   <script>
+    // =========================
+//  LIEN CONNEXION -> COMPTE
+// =========================
+const KEY_ACCOUNT = "talentAccount";   // créé à l'inscription
+const KEY_SESSION = "talentSession";   // créé à la connexion / inscription
+
+function readJSON(key){
+  const raw = localStorage.getItem(key);
+  if(!raw) return null;
+  try { return JSON.parse(raw); } catch(e){ return null; }
+}
+
+const session = readJSON(KEY_SESSION);
+if(!session || session.connected !== true){
+  // Pas connecté => retour à la page connexion Talent
+  window.location.href = "profil-talent-connexion.html";
+}
     /***********************
      * DONNÉES (DEMO)
      * Remplace par tes vraies données (API / base de données) plus tard.
      ***********************/
-    const user = {
-      prenoms: "Victoire",
-      nom: "Kouakou",
-      email: "utilisateur@email.com",
-      continent: "Afrique",
-      pays: "Côte d’Ivoire",
-      ville: "Abidjan",
-      emploi: "Assistante travaux / Suivi de chantier",
-      // Conditions d'identité vérifiée (exemple)
-      identity: {
-        hasIdDocument: true,
-        hasSelfie: true,
-        hasPhoneVerified: true
-      }
+   // Charger le compte enregistré (inscription)
+const savedAccount = readJSON(KEY_ACCOUNT) || {};
+
+// Construire l'objet user à partir du compte enregistré
+const user = {
+  prenoms: savedAccount.prenoms || "",     // (vide pour l'instant si pas demandé à l'inscription)
+  nom: savedAccount.nom || "",
+  email: savedAccount.email || "",
+  continent: savedAccount.continent || "Afrique",
+  pays: savedAccount.pays || "Côte d’Ivoire",
+  ville: savedAccount.ville || "Abidjan",
+  emploi: savedAccount.emploi || "Poste actuel",
+  identity: savedAccount.identity || {
+    hasIdDocument: false,
+    hasSelfie: false,
+    hasPhoneVerified: false
+  }
+};
+
+// Si pas de prénom/nom encore, on affiche le login
+if(!user.prenoms && !user.nom){
+  user.prenoms = session?.login || "Utilisateur";
+  user.nom = "";
+}
+
     };
 
     // Notifications (DEMO)
