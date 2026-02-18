@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Connexion - Recruteur</title>
+
+<style>
+  *{ box-sizing:border-box; }
+  body{
+    margin:0;
+    font-family: Arial, sans-serif;
+    background:#ffffff;
+  }
+
+  .screen{
+    min-height:100vh;
+    display:flex;
+    background: linear-gradient(to right, #ffffff 0%, #ffffff 30%, #a8c2da 100%);
+  }
+
+  .sidebar{
+    width:220px;
+    padding:0;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:#fff;
+  }
+
+  .logo img{
+    max-width:220px;
+    height:auto;
+    display:block;
+  }
+
+  .menu{
+    background-color:#fff;
+    flex:1;
+    padding:20px;
+    border: 1.5px solid #2f5fa7;
+    border-radius: 10px;
+  }
+
+  .menu a{
+    display:block;
+    margin:35px 0;
+    text-decoration:none;
+    color:black;
+    font-style:italic;
+  }
+  .menu a:hover{color:red}
+
+  .dropdown{position:relative;margin:20px 0;}
+
+  .dropbtn{
+    display:block;
+    text-decoration:none;
+    color:black;
+    font-style:italic;
+  }
+  .dropbtn:hover{color:red;}
+
+  .dropdown-content{
+    display:none;
+    margin-top:8px;
+    margin-left:12px;
+    border-left:2px solid #eee;
+    padding-left:12px;
+  }
+
+  .dropdown-content a{
+    display:block;
+    margin:10px 0;
+    text-decoration:none;
+    color:#333;
+    font-style:normal;
+    font-size:14px;
+  }
+  .dropdown-content a:hover{color:red;}
+  .dropdown:hover .dropdown-content{display:block;}
+
+  .content{
+    flex:1;
+    padding:30px 22px;
+  }
+
+  .title{
+    text-align:center;
+    color:#b71c1c;
+    font-size:34px;
+    letter-spacing:1px;
+    margin:18px 0 35px;
+    font-weight:500;
+  }
+
+  .form-area{
+    max-width:900px;
+    margin:0 auto;
+    padding-top:10px;
+  }
+
+  .row{
+    display:grid;
+    grid-template-columns: 180px 1fr;
+    gap:20px;
+    align-items:center;
+    margin:22px 0;
+  }
+
+  .row label{
+    font-size:20px;
+    font-weight:600;
+    color:#111;
+  }
+
+  .row input[type="text"],
+  .row input[type="password"]{
+    height:45px;
+    width:100%;
+    border:2px solid #9e9e9e;
+    background:#ffffff;
+    padding:10px 12px;
+    outline:none;
+  }
+
+  .register{
+    margin-top:8px;
+    text-align:right;
+    font-size:18px;
+    padding-right:10px;
+  }
+  .register a{
+    color:#1565c0;
+    text-decoration:underline;
+  }
+
+  .actions{
+    margin-top:18px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+  }
+
+  .btn-login{
+    width:240px;
+    height:46px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:18px;
+    font-weight:700;
+    color:#fff;
+    background:#2f5fa7;
+  }
+  .btn-login:hover{ filter:brightness(0.95); }
+
+  .stay{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    font-style:italic;
+    font-weight:700;
+    color:#111;
+  }
+
+  .forgot{
+    margin-top:10px;
+    text-align:center;
+    font-size:16px;
+  }
+  .forgot a{
+    color:#1565c0;
+    text-decoration:underline;
+  }
+
+  .msg{
+    margin-top:14px;
+    text-align:center;
+    font-size:16px;
+    font-weight:700;
+  }
+  .msg.ok{ color:#1b5e20; }
+  .msg.err{ color:#b71c1c; }
+
+  .reset-box{
+    margin:14px auto 0;
+    max-width:520px;
+    padding:14px 16px;
+    background:#ffffff;
+    border:1.5px solid #2f5fa7;
+    border-radius:10px;
+    display:none;
+  }
+  .reset-box p{
+    margin:0 0 10px;
+    font-size:14px;
+    line-height:1.35;
+  }
+  .reset-box input{
+    width:100%;
+    height:42px;
+    border:2px solid #9e9e9e;
+    padding:10px 12px;
+    outline:none;
+  }
+  .reset-box button{
+    margin-top:10px;
+    width:100%;
+    height:42px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-weight:700;
+    background:#2f5fa7;
+    color:#fff;
+  }
+
+  @media (max-width: 850px){
+    .screen{ flex-direction:column; }
+    .sidebar{ width:100%; }
+    .row{ grid-template-columns:1fr; }
+    .register{ text-align:center; padding-right:0; }
+  }
+</style>
+</head>
+
+<body>
+  <div class="screen">
+
+    <!-- MENU GAUCHE -->
+    <div class="sidebar">
+      <div class="logo">
+        <img src="images/LOGO I-JOM.jpg" alt="Logo I-JOM">
+      </div>
+
+      <div class="menu">
+        <a href="index.html">ACCUEIL</a>
+        <a href="apropos.html">A PROPOS DE NOUS</a>
+
+        <!-- PROFIL TALENT -->
+        <div class="dropdown">
+          <span class="dropbtn">PROFIL TALENT ▾</span>
+          <div class="dropdown-content">
+            <a href="profil-talent-connexion.html">Connexion</a>
+            <a href="profil-talent-moncompte.html">Mon Compte</a>
+            <a href="profil-talent-inscription.html">Inscription</a>
+          </div>
+        </div>
+
+        <!-- RECRUTEUR -->
+        <div class="dropdown">
+          <span class="dropbtn" style="font-weight:bold;color:#b71c1c;">RECRUTEUR ▾</span>
+          <div class="dropdown-content">
+            <a href="recruteur-connexion.html" class="active" style="color:#b71c1c;font-weight:bold;">Connexion</a>
+            <a href="recruteur-moncompte.html">Mon Compte</a>
+            <a href="recruteur-inscription.html">Inscription</a>
+          </div>
+        </div>
+
+        <a href="partenaires.html">NOS PARTENAIRES</a>
+        <a href="contact.html">NOUS CONTACTER</a>
+      </div>
+    </div>
+
+    <!-- CONTENU -->
+    <main class="content">
+      <div class="title">CONNEXION RECRUTEUR</div>
+
+      <div class="form-area">
+        <form id="loginFormRecruiter" action="#" method="post" novalidate>
+          <div class="row">
+            <label for="loginR">Login</label>
+            <input id="loginR" name="login" type="text" autocomplete="username" required>
+          </div>
+
+          <div class="row">
+            <label for="mdpR">Mot de passe</label>
+            <input id="mdpR" name="password" type="password" autocomplete="current-password" required>
+          </div>
+
+          <div class="register">
+            Pas encore inscrit? <a href="recruteur-inscription.html">Cliquez ici</a>
+          </div>
+
+          <div class="actions">
+            <!-- ✅ Bouton Connexion -->
+            <button type="submit" class="btn-login" id="btnLoginR">Connexion</button>
+
+            <!-- ✅ Restez connecté -->
+            <div class="stay">
+              <input type="checkbox" id="stayConnectedR" name="stayConnected">
+              <label for="stayConnectedR">Restez connecté(e)</label>
+            </div>
+
+            <!-- ✅ Mot de passe oublié -->
+            <div class="forgot">
+              <a href="#" id="forgotLinkR">Mot de passe oublié ?</a>
+            </div>
+
+            <div class="msg" id="msgR" aria-live="polite"></div>
+          </div>
+
+          <div class="reset-box" id="resetBoxR">
+            <p>Entrez votre email. (Démo) On affichera un message comme si un lien de réinitialisation avait été envoyé.</p>
+            <input type="email" id="resetEmailR" placeholder="Votre email">
+            <button type="button" id="resetBtnR">Envoyer le lien</button>
+            <div class="msg" id="resetMsgR" aria-live="polite"></div>
+          </div>
+        </form>
+      </div>
+    </main>
+
+  </div>
+
+<script>
+  // =========================
+  //  Connexion RECRUTEUR (DEMO)
+  // =========================
+  const DEMO_LOGIN_R = "recruteur";
+  const DEMO_PASSWORD_R = "1234";
+
+  const MAX_ATTEMPTS_R = 3; // 1 essai + 2 chances
+  let attemptsR = Number(sessionStorage.getItem("recruteurLoginAttempts") || "0");
+
+  const formR = document.getElementById("loginFormRecruiter");
+  const loginR = document.getElementById("loginR");
+  const mdpR = document.getElementById("mdpR");
+  const stayR = document.getElementById("stayConnectedR");
+  const msgR = document.getElementById("msgR");
+  const btnR = document.getElementById("btnLoginR");
+
+  const forgotLinkR = document.getElementById("forgotLinkR");
+  const resetBoxR = document.getElementById("resetBoxR");
+  const resetBtnR = document.getElementById("resetBtnR");
+  const resetEmailR = document.getElementById("resetEmailR");
+  const resetMsgR = document.getElementById("resetMsgR");
+
+  // Préremplir login si "restez connecté" (démo)
+  (function preloadR(){
+    const saved = localStorage.getItem("recruteurRememberedLogin");
+    if(saved){
+      loginR.value = saved;
+      stayR.checked = true;
+    }
+  })();
+
+  function setMessageR(text, type){
+    msgR.textContent = text;
+    msgR.className = "msg " + (type || "");
+  }
+
+  function lockFormR(){
+    loginR.disabled = true;
+    mdpR.disabled = true;
+    stayR.disabled = true;
+    btnR.disabled = true;
+  }
+
+  function remainingR(){
+    return MAX_ATTEMPTS_R - attemptsR;
+  }
+
+  formR.addEventListener("submit", function(e){
+    e.preventDefault();
+
+    if(attemptsR >= MAX_ATTEMPTS_R){
+      setMessageR("Trop de tentatives. Veuillez réessayer plus tard.", "err");
+      lockFormR();
+      return;
+    }
+
+    const loginVal = (loginR.value || "").trim();
+    const passVal = mdpR.value || "";
+
+    if(!loginVal || !passVal){
+      setMessageR("Veuillez remplir le login et le mot de passe.", "err");
+      return;
+    }
+
+    const ok = (loginVal === DEMO_LOGIN_R && passVal === DEMO_PASSWORD_R);
+
+    if(ok){
+      if(stayR.checked){
+        localStorage.setItem("recruteurRememberedLogin", loginVal);
+      }else{
+        localStorage.removeItem("recruteurRememberedLogin");
+      }
+
+      attemptsR = 0;
+      sessionStorage.setItem("recruteurLoginAttempts", "0");
+
+      setMessageR("Connexion réussie. Redirection…", "ok");
+      window.location.href = "recruteur-moncompte.html";
+      return;
+    }
+
+    attemptsR += 1;
+    sessionStorage.setItem("recruteurLoginAttempts", String(attemptsR));
+
+    const restants = remainingR();
+    if(restants > 0){
+      setMessageR("Identifiants incorrects. Il vous reste " + restants + " tentative(s).", "err");
+      mdpR.value = "";
+      mdpR.focus();
+    }else{
+      setMessageR("Identifiants incorrects. Trop de tentatives. Accès temporairement bloqué.", "err");
+      lockFormR();
+    }
+  });
+
+  // Mot de passe oublié
+  forgotLinkR.addEventListener("click", function(e){
+    e.preventDefault();
+    resetMsgR.textContent = "";
+    resetMsgR.className = "msg";
+    resetBoxR.style.display = (resetBoxR.style.display === "block") ? "none" : "block";
+    if(resetBoxR.style.display === "block") resetEmailR.focus();
+  });
+
+  resetBtnR.addEventListener("click", function(){
+    const email = (resetEmailR.value || "").trim();
+    if(!email){
+      resetMsgR.textContent = "Veuillez entrer votre email.";
+      resetMsgR.className = "msg err";
+      return;
+    }
+    resetMsgR.textContent = "Si cet email existe, un lien de réinitialisation a été envoyé.";
+    resetMsgR.className = "msg ok";
+    resetEmailR.value = "";
+  });
+</script>
+
+</body>
+</html>
