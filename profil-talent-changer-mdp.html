@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Changer le mot de passe</title>
+
+<style>
+  *{ box-sizing:border-box; }
+  body{ margin:0; font-family: Arial, sans-serif; background:#ffffff; }
+  .screen{ min-height:100vh; display:flex; background: linear-gradient(to right, #ffffff 0%, #ffffff 30%, #a8c2da 100%); }
+
+  .sidebar{ width:220px; min-height:100vh; display:flex; flex-direction:column; background:#fff; }
+  .logo img{ max-width:220px; height:auto; display:block; }
+
+  .menu{
+    background:#fff; flex:1; padding:20px;
+    border:1.5px solid #2f5fa7; border-radius:10px;
+  }
+  .menu a{ display:block; margin:35px 0; text-decoration:none; color:black; font-style:italic; }
+  .menu a:hover{ color:red; }
+
+  .content{ flex:1; padding:30px 22px; }
+  .title{ text-align:center; color:#b71c1c; font-size:30px; margin:18px 0 10px; font-weight:500; }
+
+  .form-area{ max-width:700px; margin:0 auto; padding-top:10px; }
+  .section{
+    background:#fff; border:1.5px solid #2f5fa7; border-radius:12px;
+    padding:18px 16px; margin:16px 0;
+  }
+
+  .row{
+    display:grid; grid-template-columns: 240px 1fr;
+    gap:20px; align-items:center; margin:14px 0;
+  }
+  label{ font-size:16px; font-weight:700; }
+  input{
+    height:45px; width:100%;
+    border:2px solid #9e9e9e; background:#fff;
+    padding:10px 12px; outline:none;
+  }
+
+  .actions{ margin-top:14px; display:flex; flex-direction:column; align-items:center; gap:12px; }
+  .btn{
+    width:300px; height:46px; border:none; border-radius:10px; cursor:pointer;
+    font-size:18px; font-weight:800; color:#fff; background:#2f5fa7;
+  }
+  .btn.gray{ background:#777; }
+
+  .msg{ margin-top:8px; text-align:center; font-size:16px; font-weight:800; }
+  .msg.ok{ color:#1b5e20; }
+  .msg.err{ color:#b71c1c; }
+
+  @media (max-width: 900px){
+    .screen{ flex-direction:column; }
+    .sidebar{ width:100%; }
+    .row{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+
+<body>
+<div class="screen">
+  <div class="sidebar">
+    <div class="logo"><img src="images/LOGO I-JOM.jpg" alt="Logo I-JOM"></div>
+    <div class="menu">
+      <a href="index.html">ACCUEIL</a>
+      <a href="apropos.html">A PROPOS DE NOUS</a>
+      <a href="profil-talent-inscription.html" class="active">PROFIL TALENT - INSCRIPTION</a>
+      <a href="profil-talent-compte.html">MON COMPTE</a>
+      <a href="contact.html">NOUS CONTACTER</a>
+    </div>
+  </div>
+
+  <main class="content">
+    <div class="title">CHANGER LE MOT DE PASSE</div>
+
+    <div class="form-area">
+      <div class="section">
+
+        <div class="row">
+          <label for="oldPwd">Ancien mot de passe</label>
+          <input id="oldPwd" type="password" autocomplete="current-password">
+        </div>
+
+        <div class="row">
+          <label for="newPwd">Nouveau mot de passe</label>
+          <input id="newPwd" type="password" autocomplete="new-password">
+        </div>
+
+        <div class="row">
+          <label for="newPwd2">Confirmer</label>
+          <input id="newPwd2" type="password" autocomplete="new-password">
+        </div>
+
+        <div class="actions">
+          <button class="btn" id="btnSave">Enregistrer</button>
+          <button class="btn gray" id="btnBack" type="button">Retour</button>
+          <div class="msg" id="msg" aria-live="polite"></div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  const KEY_ACCOUNT = "talentAccount";
+  const KEY_SESSION = "talentSession";
+
+  const oldPwd = document.getElementById("oldPwd");
+  const newPwd = document.getElementById("newPwd");
+  const newPwd2 = document.getElementById("newPwd2");
+  const msg = document.getElementById("msg");
+
+  const btnSave = document.getElementById("btnSave");
+  const btnBack = document.getElementById("btnBack");
+
+  function setMessage(text, type){
+    msg.textContent = text;
+    msg.className = "msg " + (type || "");
+  }
+
+  function readJSON(key){
+    const raw = localStorage.getItem(key);
+    if(!raw) return null;
+    try { return JSON.parse(raw); } catch(e){ return null; }
+  }
+  function writeJSON(key, value){
+    localStorage.setItem(key, JSON.stringify(value));
+  }
+
+  function isConnected(){
+    const s = readJSON(KEY_SESSION);
+    return !!(s && s.connected === true && s.login);
+  }
+
+  btnBack.addEventListener("click", () => {
+    window.location.href = "profil-talent-inscription.html";
+  });
+
+  btnSave.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    if(!isConnected()){
+      setMessage("Vous devez être connecté(e) pour modifier le mot de passe.", "err");
+      return;
+    }
+
+    const acc = readJSON(KEY_ACCOUNT);
+    if(!acc){
+      setMessage("Aucun compte trouvé sur cet appareil.", "err");
+      return;
+    }
+
+    const oldV = oldPwd.value || "";
+    const newV = newPwd.value || "";
+    const newV2 = newPwd2.value || "";
+
+    if(!oldV || !newV || !newV2){
+      setMessage("Veuillez remplir tous les champs.", "err");
+      return;
+    }
+
+    if(oldV !== acc.password){
+      setMessage("Ancien mot de passe incorrect.", "err");
+      return;
+    }
+
+    if(newV !== newV2){
+      setMessage("La confirmation ne correspond pas.", "err");
+      return;
+    }
+
+    // nouveau mot de passe ne doit pas ressembler à l’ancien (ici : différent)
+    if(newV === oldV){
+      setMessage("Le nouveau mot de passe doit être différent de l’ancien.", "err");
+      return;
+    }
+
+    acc.password = newV;
+    acc.updatedAt = new Date().toISOString();
+    writeJSON(KEY_ACCOUNT, acc);
+
+    setMessage("Mot de passe modifié avec succès ✅", "ok");
+    setTimeout(() => window.location.href = "profil-talent-compte.html", 700);
+  });
+</script>
+</body>
+</html>
