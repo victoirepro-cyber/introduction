@@ -3,59 +3,164 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Changer le mot de passe</title>
+<title>Inscription - Profil Talent</title>
 
 <style>
   *{ box-sizing:border-box; }
-  body{ margin:0; font-family: Arial, sans-serif; background:#fff; }
-  .screen{ min-height:100vh; display:flex; background: linear-gradient(to right, #ffffff 0%, #ffffff 30%, #a8c2da 100%); }
+  body{ margin:0; font-family: Arial, sans-serif; background:#ffffff; }
 
-  .sidebar{ width:220px; min-height:100vh; display:flex; flex-direction:column; background:#fff; }
-  .logo img{ max-width:220px; height:auto; display:block; }
-  .menu{
-    background:#fff; flex:1; padding:20px;
-    border:1.5px solid #2f5fa7; border-radius:10px;
+  .screen{
+    min-height:100vh;
+    display:flex;
+    background: linear-gradient(to right, #ffffff 0%, #ffffff 30%, #a8c2da 100%);
   }
-  .menu a{ display:block; margin:35px 0; text-decoration:none; color:black; font-style:italic; }
-  .menu a:hover{ color:red; }
-  .dropdown{ position:relative; margin:20px 0; }
-  .dropbtn{ display:block; color:black; font-style:italic; }
-  .dropdown-content{ display:none; margin-top:8px; margin-left:12px; border-left:2px solid #eee; padding-left:12px; }
-  .dropdown-content a{ display:block; margin:10px 0; text-decoration:none; color:#333; font-size:14px; }
-  .dropdown:hover .dropdown-content{ display:block; }
+
+  .sidebar{
+    width:220px;
+    padding:0;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:#fff;
+  }
+
+  .logo img{ max-width:220px; height:auto; display:block; }
+
+  .menu{
+    background-color:#fff;
+    flex:1;
+    padding:20px;
+    border: 1.5px solid #2f5fa7;
+    border-radius: 10px;
+  }
+
+  .menu a{
+    display:block;
+    margin:35px 0;
+    text-decoration:none;
+    color:black;
+    font-style:italic;
+  }
+  .menu a:hover{color:red}
+  .menu a.active{ font-size:22px; font-weight:bold; color:red; }
+
+  .dropdown{position:relative;margin:20px 0;}
+  .dropbtn{ display:block; text-decoration:none; color:black; font-style:italic; }
+  .dropbtn:hover{color:red;}
+  .dropdown-content{
+    display:none; margin-top:8px; margin-left:12px;
+    border-left:2px solid #eee; padding-left:12px;
+  }
+  .dropdown-content a{
+    display:block; margin:10px 0; text-decoration:none;
+    color:#333; font-style:normal; font-size:14px;
+  }
+  .dropdown-content a:hover{color:red;}
+  .dropdown:hover .dropdown-content{display:block;}
 
   .content{ flex:1; padding:30px 22px; }
-  .title{ text-align:center; color:#b71c1c; font-size:30px; margin:18px 0 10px; font-weight:500; }
 
-  .form-area{ max-width:700px; margin:0 auto; padding-top:10px; }
-  .section{
-    background:#fff; border:1.5px solid #2f5fa7; border-radius:12px;
-    padding:18px 16px; margin:16px 0;
+  .title{
+    text-align:center;
+    color:#b71c1c;
+    font-size:34px;
+    letter-spacing:1px;
+    margin:18px 0 10px;
+    font-weight:500;
   }
+
+  .subtitle{
+    text-align:center;
+    margin:0 0 20px;
+    font-size:16px;
+    color:#111;
+    font-weight:700;
+  }
+
+  .badge{
+    display:inline-block;
+    padding:6px 10px;
+    border-radius:999px;
+    border:1.5px solid #2f5fa7;
+    font-size:13px;
+    font-weight:700;
+    background:#fff;
+  }
+
+  .form-area{ max-width:900px; margin:0 auto; padding-top:10px; }
+
+  .section{
+    background:#ffffff;
+    border:1.5px solid #2f5fa7;
+    border-radius:12px;
+    padding:18px 16px;
+    margin:16px 0;
+  }
+
+  .section h3{ margin:0 0 12px; font-size:20px; color:#2f5fa7; }
+
+  .hint{ margin:0 0 12px; font-size:14px; line-height:1.35; color:#333; }
 
   .row{
-    display:grid; grid-template-columns: 240px 1fr;
-    gap:20px; align-items:center; margin:14px 0;
-  }
-  label{ font-size:16px; font-weight:700; }
-  input{
-    height:45px; width:100%;
-    border:2px solid #9e9e9e; background:#fff;
-    padding:10px 12px; outline:none;
+    display:grid;
+    grid-template-columns: 230px 1fr;
+    gap:20px;
+    align-items:center;
+    margin:18px 0;
   }
 
-  .actions{ margin-top:14px; display:flex; flex-direction:column; align-items:center; gap:12px; }
-  .btn{
-    width:300px; height:46px; border:none; border-radius:10px; cursor:pointer;
-    font-size:18px; font-weight:800; color:#fff; background:#2f5fa7;
-  }
-  .btn.gray{ background:#777; }
+  .row label{ font-size:18px; font-weight:700; color:#111; }
 
-  .msg{ margin-top:8px; text-align:center; font-size:16px; font-weight:800; }
+  .row input[type="text"],
+  .row input[type="password"],
+  .row input[type="email"]{
+    height:45px;
+    width:100%;
+    border:2px solid #9e9e9e;
+    background:#ffffff;
+    padding:10px 12px;
+    outline:none;
+  }
+
+  .actions{
+    margin-top:14px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:12px;
+  }
+
+  .btn-primary{
+    width:260px;
+    height:46px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:18px;
+    font-weight:800;
+    color:#fff;
+    background:#2f5fa7;
+  }
+  .btn-primary:hover{ filter:brightness(0.95); }
+
+  .msg{
+    margin-top:8px;
+    text-align:center;
+    font-size:16px;
+    font-weight:800;
+  }
   .msg.ok{ color:#1b5e20; }
   .msg.err{ color:#b71c1c; }
 
-  @media (max-width: 900px){
+  .already{
+    margin-top:10px;
+    text-align:center;
+    font-size:16px;
+    font-weight:700;
+  }
+  .already a{ color:#1565c0; text-decoration:underline; }
+
+  @media (max-width: 850px){
     .screen{ flex-direction:column; }
     .sidebar{ width:100%; }
     .row{ grid-template-columns:1fr; }
@@ -64,72 +169,101 @@
 </head>
 
 <body>
-<div class="screen">
-  <div class="sidebar">
-    <div class="logo"><img src="images/LOGO I-JOM.jpg" alt="Logo I-JOM"></div>
-    <div class="menu">
-      <a href="index.html">ACCUEIL</a>
-      <a href="apropos.html">A PROPOS DE NOUS</a>
+  <div class="screen">
 
-      <div class="dropdown">
-        <span class="dropbtn">PROFIL TALENT ▾</span>
-        <div class="dropdown-content">
-          <a href="profil-talent-connexion.html">Connexion</a>
-          <a href="profil-talent-compte.html">Mon Compte</a>
-          <a href="profil-talent-inscription.html">Inscription</a>
-        </div>
+    <div class="sidebar">
+      <div class="logo">
+        <img src="images/LOGO I-JOM.jpg" alt="Logo I-JOM">
       </div>
 
-      <a href="partenaires.html">NOS PARTENAIRES</a>
-      <a href="contact.html">NOUS CONTACTER</a>
+      <div class="menu">
+        <a href="index.html">ACCUEIL</a>
+        <a href="apropos.html">A PROPOS DE NOUS</a>
+
+        <div class="dropdown">
+          <span class="dropbtn active">PROFIL TALENT ▾</span>
+          <div class="dropdown-content">
+            <a href="profil-talent-connexion.html">Connexion</a>
+            <a href="profil-talent-compte.html">Mon Compte</a>
+            <a href="profil-talent-inscription.html" class="active">Inscription</a>
+          </div>
+        </div>
+
+        <div class="dropdown">
+          <span class="dropbtn">RECRUTEUR ▾</span>
+          <div class="dropdown-content">
+            <a href="recruteur-connexion.html">Connexion</a>
+            <a href="recruteur-moncompte.html">Mon Compte</a>
+            <a href="recruteur-inscription.html">Inscription</a>
+          </div>
+        </div>
+
+        <a href="partenaires.html">NOS PARTENAIRES</a>
+        <a href="contact.html">NOUS CONTACTER</a>
+      </div>
     </div>
+
+    <main class="content">
+      <div class="title">INSCRIPTION PROFIL TALENT</div>
+      <p class="subtitle">
+        <span class="badge">Création de compte</span>
+      </p>
+
+      <div class="form-area">
+        <form id="signupForm" novalidate>
+          <div class="section">
+            <h3>Créer votre compte</h3>
+            <p class="hint">
+              Remplissez ces informations pour créer votre compte, puis vous serez redirigé(e) vers <b>Mon Compte</b>.
+            </p>
+
+            <div class="row">
+              <label for="email">Adresse mail</label>
+              <input id="email" type="email" required placeholder="ex: nom.prenom@email.com">
+            </div>
+
+            <div class="row">
+              <label for="login">Login</label>
+              <input id="login" type="text" required placeholder="Choisissez un login">
+            </div>
+
+            <div class="row">
+              <label for="mdp">Mot de passe</label>
+              <input id="mdp" type="password" required placeholder="Choisissez un mot de passe">
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="btn-primary">Créer mon compte</button>
+              <div class="msg" id="msg" aria-live="polite"></div>
+            </div>
+
+            <div class="already">
+              Déjà inscrit(e) ? <a href="profil-talent-connexion.html">Se connecter</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </main>
+
   </div>
 
-  <main class="content">
-    <div class="title">CHANGER LE MOT DE PASSE</div>
-
-    <div class="form-area">
-      <div class="section">
-        <div class="row">
-          <label for="oldPwd">Ancien mot de passe</label>
-          <input id="oldPwd" type="password" autocomplete="current-password" placeholder="Saisir l’ancien mot de passe">
-        </div>
-
-        <div class="row">
-          <label for="newPwd">Nouveau mot de passe</label>
-          <input id="newPwd" type="password" autocomplete="new-password" placeholder="Saisir le nouveau mot de passe">
-        </div>
-
-        <div class="row">
-          <label for="newPwd2">Confirmer nouveau</label>
-          <input id="newPwd2" type="password" autocomplete="new-password" placeholder="Confirmer le nouveau mot de passe">
-        </div>
-
-        <div class="actions">
-          <button class="btn" id="btnSave">Enregistrer</button>
-          <button class="btn gray" id="btnBack" type="button">Retour</button>
-          <div class="msg" id="msg" aria-live="polite"></div>
-        </div>
-      </div>
-    </div>
-  </main>
-</div>
-
 <script>
-  const KEY_ACCOUNT = "talentAccount";
-  const KEY_SESSION = "talentSession";
+  const KEY_ACCOUNT  = "talentAccount";
+  const KEY_SESSION  = "talentSession";
 
-  const oldPwd = document.getElementById("oldPwd");
-  const newPwd = document.getElementById("newPwd");
-  const newPwd2 = document.getElementById("newPwd2");
+  const form = document.getElementById("signupForm");
+  const emailInput = document.getElementById("email");
+  const loginInput = document.getElementById("login");
+  const passInput  = document.getElementById("mdp");
   const msg = document.getElementById("msg");
-
-  const btnSave = document.getElementById("btnSave");
-  const btnBack = document.getElementById("btnBack");
 
   function setMessage(text, type){
     msg.textContent = text;
     msg.className = "msg " + (type || "");
+  }
+
+  function isValidEmail(v){
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
   }
 
   function readJSON(key){
@@ -142,60 +276,42 @@
     localStorage.setItem(key, JSON.stringify(value));
   }
 
-  function isConnected(){
-    const s = readJSON(KEY_SESSION);
-    return !!(s && s.connected === true && s.login);
-  }
-
-  btnBack.addEventListener("click", () => {
-    window.location.href = "profil-talent-inscription.html";
-  });
-
-  btnSave.addEventListener("click", (e) => {
+  form.addEventListener("submit", function(e){
     e.preventDefault();
 
-    if(!isConnected()){
-      setMessage("Vous devez être connecté(e) pour modifier le mot de passe.", "err");
+    const email = (emailInput.value || "").trim();
+    const login = (loginInput.value || "").trim();
+    const password = passInput.value || "";
+
+    if(!email || !login || !password){
+      setMessage("Veuillez remplir l’adresse mail, le login et le mot de passe.", "err");
       return;
     }
 
-    const acc = readJSON(KEY_ACCOUNT);
-    if(!acc){
-      setMessage("Aucun compte trouvé sur cet appareil.", "err");
+    if(!isValidEmail(email)){
+      setMessage("Adresse mail invalide. Exemple : nom.prenom@email.com", "err");
       return;
     }
 
-    const oldV = oldPwd.value || "";
-    const newV = newPwd.value || "";
-    const newV2 = newPwd2.value || "";
-
-    if(!oldV || !newV || !newV2){
-      setMessage("Veuillez remplir tous les champs.", "err");
+    const existing = readJSON(KEY_ACCOUNT);
+    if(existing){
+      setMessage("Un compte existe déjà sur cet appareil. Veuillez vous connecter.", "err");
       return;
     }
 
-    if(oldV !== acc.password){
-      setMessage("Ancien mot de passe incorrect.", "err");
-      return;
-    }
+    const newAccount = {
+      email, login, password,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
 
-    if(newV !== newV2){
-      setMessage("La confirmation ne correspond pas.", "err");
-      return;
-    }
+    writeJSON(KEY_ACCOUNT, newAccount);
+    writeJSON(KEY_SESSION, { login, connected: true, connectedAt: new Date().toISOString() });
 
-    if(newV === oldV){
-      setMessage("Le nouveau mot de passe ne doit pas ressembler à l’ancien (différent).", "err");
-      return;
-    }
-
-    acc.password = newV;
-    acc.updatedAt = new Date().toISOString();
-    writeJSON(KEY_ACCOUNT, acc);
-
-    setMessage("Mot de passe modifié avec succès ✅", "ok");
-    setTimeout(() => window.location.href = "profil-talent-compte.html", 700);
+    setMessage("Compte créé avec succès ✅ Redirection vers Mon Compte…", "ok");
+    window.location.href = "profil-talent-compte.html";
   });
 </script>
+
 </body>
 </html>
