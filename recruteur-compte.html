@@ -1,1 +1,569 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Compte Recruteur</title>
+  <style>
+    :root{
+      --green:#2e7d32;
+      --green2:#4caf50;
+      --bg1:#e8f5e9;
+      --bg2:#ffffff;
+      --card:#ffffff;
+      --border:#d8e6db;
+      --text:#1f2a1f;
+      --muted:#5b6b5d;
+    }
 
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Arial, sans-serif;
+      color:var(--text);
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      min-height:100vh;
+    }
+
+    /* Layout */
+    .app{
+      display:flex;
+      min-height:100vh;
+    }
+
+    /* Left menu (simple, léger) */
+    .menu{
+      width:260px;
+      background:#fff;
+      border-right:1px solid var(--border);
+      padding:20px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:10px 8px;
+      border:1px solid var(--border);
+      border-radius:12px;
+      margin-bottom:18px;
+    }
+    .brand-badge{
+      width:38px;height:38px;
+      border-radius:10px;
+      background:linear-gradient(135deg,var(--green),var(--green2));
+      display:flex;align-items:center;justify-content:center;
+      color:#fff;font-weight:bold;
+    }
+    .brand-title{
+      line-height:1.1;
+    }
+    .brand-title b{display:block}
+    .brand-title small{color:var(--muted)}
+
+    .menu a{
+      display:block;
+      padding:12px 10px;
+      margin:8px 0;
+      text-decoration:none;
+      color:var(--text);
+      border-radius:10px;
+      border:1px solid transparent;
+      font-style:italic;
+    }
+    .menu a:hover{
+      border-color:rgba(46,125,50,.25);
+      background:rgba(76,175,80,.08);
+      color:var(--green);
+    }
+    .menu a.active{
+      border-color:rgba(46,125,50,.35);
+      background:rgba(76,175,80,.12);
+      color:var(--green);
+      font-weight:bold;
+      font-style:normal;
+    }
+
+    /* Main */
+    .main{
+      flex:1;
+      padding:26px 26px 40px;
+    }
+
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .page-title{
+      margin:0;
+      font-size:26px;
+      color:var(--green);
+    }
+
+    .top-icons{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .icon-btn{
+      width:42px;height:42px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      background:#fff;
+      cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      position:relative;
+    }
+    .icon-btn:hover{
+      border-color:rgba(46,125,50,.35);
+      box-shadow:0 6px 16px rgba(0,0,0,.06);
+    }
+    .badge{
+      position:absolute;
+      top:-6px; right:-6px;
+      background:var(--green2);
+      color:#fff;
+      border-radius:999px;
+      padding:2px 7px;
+      font-size:12px;
+      border:2px solid #fff;
+    }
+
+    /* Cards */
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:18px;
+    }
+    @media (max-width: 980px){
+      .menu{display:none}
+      .grid{grid-template-columns: 1fr;}
+    }
+
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:16px;
+      box-shadow:0 10px 24px rgba(0,0,0,.05);
+    }
+    .card h2{
+      margin:0 0 10px;
+      font-size:18px;
+      color:var(--green);
+    }
+    .muted{color:var(--muted)}
+    .row{
+      display:flex;
+      gap:14px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    /* Logo area */
+    .logo-wrap{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+      flex-wrap:wrap;
+    }
+    .logo-preview{
+      width:120px;
+      height:120px;
+      border-radius:16px;
+      border:1px dashed rgba(46,125,50,.35);
+      background:rgba(76,175,80,.06);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .logo-preview img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      background:#fff;
+    }
+
+    .btn{
+      padding:10px 14px;
+      border-radius:12px;
+      border:1px solid rgba(46,125,50,.35);
+      background:rgba(76,175,80,.12);
+      color:var(--green);
+      cursor:pointer;
+      font-weight:bold;
+    }
+    .btn:hover{
+      background:rgba(76,175,80,.18);
+    }
+    .btn-primary{
+      border-color:transparent;
+      background:linear-gradient(135deg, var(--green), var(--green2));
+      color:#fff;
+    }
+    .btn-primary:hover{filter:brightness(.98)}
+
+    input, select{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--border);
+      outline:none;
+      background:#fff;
+    }
+    input:focus, select:focus{
+      border-color:rgba(46,125,50,.45);
+      box-shadow:0 0 0 4px rgba(76,175,80,.12);
+    }
+
+    .form-grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+    @media (max-width: 700px){
+      .form-grid{grid-template-columns: 1fr;}
+    }
+
+    /* Talent cards */
+    .talents{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      margin-top:10px;
+    }
+    @media (max-width: 700px){
+      .talents{grid-template-columns: 1fr;}
+    }
+    .talent{
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:12px;
+      background:#fff;
+    }
+    .talent-top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+    }
+    .pill{
+      font-size:12px;
+      border-radius:999px;
+      padding:4px 10px;
+      border:1px solid rgba(46,125,50,.25);
+      background:rgba(76,175,80,.10);
+      color:var(--green);
+      white-space:nowrap;
+      height:fit-content;
+    }
+    .talent b{display:block}
+    .talent small{color:var(--muted)}
+    .talent-actions{
+      margin-top:10px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .btn-mini{
+      padding:8px 10px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:#fff;
+      cursor:pointer;
+    }
+    .btn-mini:hover{
+      border-color:rgba(46,125,50,.35);
+      color:var(--green);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- MENU -->
+    <aside class="menu">
+      <div class="brand">
+        <div class="brand-badge">IJ</div>
+        <div class="brand-title">
+          <b>I-JOM</b>
+          <small>Compte Recruteur</small>
+        </div>
+      </div>
+
+      <a class="active" href="#">Accueil</a>
+      <a href="#">Meilleurs profils</a>
+      <a href="#">Recherche personnalisée</a>
+      <a href="#">Messages</a>
+      <a href="#">Notifications</a>
+      <a href="#">Paramètres</a>
+      <a href="#">Déconnexion</a>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="topbar">
+        <h1 class="page-title">Espace Recruteur</h1>
+
+        <div class="top-icons">
+          <button class="icon-btn" title="Notifications">
+            🔔 <span class="badge" id="notifCount">2</span>
+          </button>
+          <button class="icon-btn" title="Messagerie">
+            💬 <span class="badge" id="msgCount">1</span>
+          </button>
+          <button class="icon-btn" title="Paramètres">⚙️</button>
+        </div>
+      </div>
+
+      <div class="grid">
+
+        <!-- LOGO ENTREPRISE -->
+        <section class="card">
+          <h2>Logo de l’entreprise</h2>
+          <p class="muted" style="margin-top:0">
+            Ajoute ton logo (il s’affichera sur ton profil recruteur).
+          </p>
+
+          <div class="logo-wrap">
+            <div class="logo-preview" id="logoPreview">
+              <span class="muted">Aucun logo</span>
+            </div>
+
+            <div style="flex:1; min-width:240px">
+              <div class="row" style="margin-bottom:10px">
+                <input id="logoInput" type="file" accept="image/*" />
+              </div>
+
+              <div class="row">
+                <button class="btn btn-primary" id="btnSaveLogo">Enregistrer le logo</button>
+                <button class="btn" id="btnRemoveLogo">Retirer</button>
+              </div>
+
+              <p class="muted" style="margin:12px 0 0">
+                (Prototype) Pour l’instant c’est un aperçu local. Plus tard on le stockera dans Firebase Storage.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- MEILLEURS PROFILS -->
+        <section class="card">
+          <h2>Meilleurs profils talents</h2>
+          <p class="muted" style="margin-top:0">
+            Exemple d’affichage. Plus tard, on chargera ça depuis Firestore.
+          </p>
+
+          <div class="talents" id="bestTalents">
+            <!-- Exemples -->
+            <div class="talent">
+              <div class="talent-top">
+                <div>
+                  <b>Marie K.</b>
+                  <small>Accessoiriste • BAC+2 BTS</small>
+                </div>
+                <span class="pill">Compatibilité 88%</span>
+              </div>
+              <div class="talent-actions">
+                <button class="btn-mini">Voir profil</button>
+                <button class="btn-mini">Contacter</button>
+              </div>
+            </div>
+
+            <div class="talent">
+              <div class="talent-top">
+                <div>
+                  <b>Yao S.</b>
+                  <small>Logistique • BAC</small>
+                </div>
+                <span class="pill">Compatibilité 81%</span>
+              </div>
+              <div class="talent-actions">
+                <button class="btn-mini">Voir profil</button>
+                <button class="btn-mini">Contacter</button>
+              </div>
+            </div>
+
+            <div class="talent">
+              <div class="talent-top">
+                <div>
+                  <b>Aïcha D.</b>
+                  <small>Assistante admin • BAC+3 Licence</small>
+                </div>
+                <span class="pill">Compatibilité 79%</span>
+              </div>
+              <div class="talent-actions">
+                <button class="btn-mini">Voir profil</button>
+                <button class="btn-mini">Contacter</button>
+              </div>
+            </div>
+
+            <div class="talent">
+              <div class="talent-top">
+                <div>
+                  <b>Konan P.</b>
+                  <small>Comptable • BAC+5 Master</small>
+                </div>
+                <span class="pill">Compatibilité 76%</span>
+              </div>
+              <div class="talent-actions">
+                <button class="btn-mini">Voir profil</button>
+                <button class="btn-mini">Contacter</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RECHERCHE PERSONNALISÉE -->
+        <section class="card" style="grid-column: 1 / -1;">
+          <h2>Recherche personnalisée</h2>
+          <p class="muted" style="margin-top:0">
+            Filtre tes talents par métier, diplôme, localisation, expérience… (Prototype).
+          </p>
+
+          <div class="form-grid">
+            <div>
+              <label class="muted">Métier recherché</label>
+              <input type="text" id="fMetier" placeholder="Ex: Accessoiriste, Comptable, ...">
+            </div>
+
+            <div>
+              <label class="muted">Diplôme (format simple)</label>
+              <input type="text" id="fDiplome" placeholder="Ex: BAC+2 BTS">
+            </div>
+
+            <div>
+              <label class="muted">Localisation</label>
+              <input type="text" id="fVille" placeholder="Ex: Abidjan">
+            </div>
+
+            <div>
+              <label class="muted">Expérience minimum (mois)</label>
+              <input type="number" id="fExp" min="0" placeholder="Ex: 6">
+            </div>
+          </div>
+
+          <div class="row" style="margin-top:12px">
+            <button class="btn btn-primary" id="btnSearch">Rechercher</button>
+            <button class="btn" id="btnReset">Réinitialiser</button>
+          </div>
+
+          <div style="margin-top:14px">
+            <h3 style="margin:0 0 10px; color:var(--green); font-size:16px;">Résultats</h3>
+            <div class="talents" id="searchResults">
+              <p class="muted" style="margin:0">Aucun résultat pour le moment. Lance une recherche.</p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ---- LOGO (Prototype local preview) ----
+    const logoInput = document.getElementById('logoInput');
+    const logoPreview = document.getElementById('logoPreview');
+    const btnSaveLogo = document.getElementById('btnSaveLogo');
+    const btnRemoveLogo = document.getElementById('btnRemoveLogo');
+
+    let currentLogoDataUrl = null;
+
+    logoInput.addEventListener('change', () => {
+      const file = logoInput.files?.[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        currentLogoDataUrl = reader.result;
+        logoPreview.innerHTML = `<img src="${currentLogoDataUrl}" alt="Logo entreprise">`;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    btnSaveLogo.addEventListener('click', () => {
+      if (!currentLogoDataUrl) {
+        alert("Choisis d'abord un logo.");
+        return;
+      }
+      // Plus tard : upload vers Firebase Storage + enregistrer l'URL dans Firestore
+      alert("Logo enregistré (prototype). Plus tard on le stockera dans Firebase.");
+    });
+
+    btnRemoveLogo.addEventListener('click', () => {
+      currentLogoDataUrl = null;
+      logoInput.value = "";
+      logoPreview.innerHTML = `<span class="muted">Aucun logo</span>`;
+    });
+
+    // ---- Recherche (Prototype) ----
+    const btnSearch = document.getElementById('btnSearch');
+    const btnReset = document.getElementById('btnReset');
+    const results = document.getElementById('searchResults');
+
+    function renderResultEmpty(){
+      results.innerHTML = `<p class="muted" style="margin:0">Aucun résultat pour le moment. Lance une recherche.</p>`;
+    }
+
+    btnSearch.addEventListener('click', () => {
+      const metier = document.getElementById('fMetier').value.trim().toLowerCase();
+      const diplome = document.getElementById('fDiplome').value.trim().toLowerCase();
+      const ville = document.getElementById('fVille').value.trim().toLowerCase();
+      const exp = Number(document.getElementById('fExp').value || 0);
+
+      // Prototype : résultats fictifs filtrés "grossièrement"
+      const fake = [
+        { nom:"Marie K.", metier:"accessoiriste", diplome:"bac+2 bts", ville:"abidjan", exp:12, score:88 },
+        { nom:"Yao S.", metier:"logistique", diplome:"bac", ville:"abidjan", exp:24, score:81 },
+        { nom:"Aïcha D.", metier:"assistante admin", diplome:"bac+3 licence", ville:"abidjan", exp:10, score:79 },
+        { nom:"Konan P.", metier:"comptable", diplome:"bac+5 master", ville:"bouaké", exp:36, score:76 }
+      ];
+
+      const filtered = fake.filter(t => {
+        if (metier && !t.metier.includes(metier)) return false;
+        if (diplome && !t.diplome.includes(diplome)) return false;
+        if (ville && !t.ville.includes(ville)) return false;
+        if (exp && t.exp < exp) return false;
+        return true;
+      });
+
+      if (!filtered.length){
+        results.innerHTML = `<p class="muted" style="margin:0">Aucun profil ne correspond à ta recherche.</p>`;
+        return;
+      }
+
+      results.innerHTML = filtered.map(t => `
+        <div class="talent">
+          <div class="talent-top">
+            <div>
+              <b>${t.nom}</b>
+              <small>${t.metier} • ${t.diplome.toUpperCase()}</small><br/>
+              <small class="muted">Ville: ${t.ville} • Exp: ${t.exp} mois</small>
+            </div>
+            <span class="pill">Compatibilité ${t.score}%</span>
+          </div>
+          <div class="talent-actions">
+            <button class="btn-mini">Voir profil</button>
+            <button class="btn-mini">Contacter</button>
+          </div>
+        </div>
+      `).join('');
+    });
+
+    btnReset.addEventListener('click', () => {
+      document.getElementById('fMetier').value = "";
+      document.getElementById('fDiplome').value = "";
+      document.getElementById('fVille').value = "";
+      document.getElementById('fExp').value = "";
+      renderResultEmpty();
+    });
+
+    renderResultEmpty();
+  </script>
+</body>
+</html>
